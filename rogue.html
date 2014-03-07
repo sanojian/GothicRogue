@@ -16,7 +16,7 @@
 	<script type="text/javascript" src="./dungeonGen.js"></script>
 	<script type="text/javascript" src="./gameDefines.js"></script>
 	<script type="text/javascript" src="./includes/buzz.min.js"></script>
-	<link href='//fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=IM+Fell+Double+Pica+SC' rel='stylesheet' type='text/css'>
 	<style>
 		body, html { margin:0; padding: 0; overflow:hidden; font-family:Arial; font-size:20px }
 		#cr-stage { border:2px solid black; margin:5px auto; color:white }
@@ -44,8 +44,8 @@
 
 
 var RENDERING_MODE = 'DOM';//'Canvas';
-var GAME_FONT = '"Press Start 2P", cursive';
-var ZOOM = 2;
+var GAME_FONT = '"IM Fell Double Pica SC", serif';
+var ZOOM = 1;
 var TILE_WIDTH = 32*ZOOM;
 var TILE_HEIGHT = 32*ZOOM;
 var TERRAIN_WIDTH = TILE_WIDTH;
@@ -1428,18 +1428,18 @@ function doCraftyInitialization() {
 				icon_staff_4: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
 			});
 
-			Crafty.sprite(1, './images/crl_chars.gif', {
+			Crafty.sprite(1, './images/crl_chars_x' + ZOOM + '.gif', {
 				fighter: [0*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				wizard: [0*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
 			});
 
-			Crafty.sprite(1, './images/crl_terrain.gif', {
+			Crafty.sprite(1, './images/crl_terrain_x' + ZOOM + '.gif', {
 				wall_brick: [0*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TILE_HEIGHT*1.5 + 3],
 				ceiling_brick: [0*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
 				floor_cracks: [1*TERRAIN_WIDTH, 5*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
 			});
 
-			Crafty.sprite(1, './images/crl_mons32.gif', {
+			Crafty.sprite(1, './images/crl_mons32_x' + ZOOM + '.gif', {
 				rat: [0*TILE_WIDTH, 8*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				rat_king: [8*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				bat: [7*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
@@ -1553,8 +1553,8 @@ function doCraftyInitialization() {
 				formats: [ "wav" ]
 			});
 		
-			//Crafty.scene("intro");
-			Crafty.scene("main");
+			Crafty.scene("intro");
+			//Crafty.scene("main");
 			
 		});
 	});
@@ -1614,7 +1614,7 @@ function doCraftyInitialization() {
 			.attr({ x: VIEW_WIDTH/2 - 3*108/2, y: VIEW_HEIGHT/2, z: 10 })
 
 			Crafty.e('2D, ' + RENDERING_MODE + ', Text').attr({ w: VIEW_WIDTH, x: 0, y: 64, z: 1000 })
-			.text("Two Friends, One Dungeon")
+			.text("Luminecent Ichor")
 			.textColor('#9D9D9D', 1)
 			.textFont({ size: "32pt", weight: 'bold', family: GAME_FONT })
 			.css({ 'text-align': 'center'})
