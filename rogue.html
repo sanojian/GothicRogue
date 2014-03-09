@@ -5,6 +5,7 @@
 	
 	Artwork - Oryx (http://oryxdesignlab.com/)
 	Music - Deceased Superior Technician (http://www.nosoapradio.us/)
+	Map Generation - ROguelike Toolkit in JavaScript (http://ondras.github.io/rot.js/hp/)
 	
 	Thanks for buzzjs and craftyjs!
 -->
@@ -13,8 +14,8 @@
 	<title>Gothic Rogue</title>
 	<script type="text/javascript" src="./includes/crafty.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script type="text/javascript" src="./dungeonGen.js"></script>
 	<script type="text/javascript" src="./gameDefines.js"></script>
+    <script type="text/javascript" src="./includes/ROT.min.js"></script>
 	<script type="text/javascript" src="./includes/buzz.min.js"></script>
 	<link href='//fonts.googleapis.com/css?family=IM+Fell+Double+Pica+SC' rel='stylesheet' type='text/css'>
 	<style>
@@ -37,6 +38,9 @@
 			position: absolute;
 			visibility: hidden;
 		}
+        div.nameText {
+            line-height: 16px;
+        }
 	</style>
 	
 	<script language="javascript">
@@ -50,8 +54,8 @@ var TILE_WIDTH = 32*ZOOM;
 var TILE_HEIGHT = 32*ZOOM;
 var TERRAIN_WIDTH = TILE_WIDTH;
 var TERRAIN_HEIGHT = TILE_HEIGHT * 1.5 + ZOOM;
-var VIEW_WIDTH = 28*TILE_WIDTH;
-var VIEW_HEIGHT = 10*TILE_HEIGHT;
+var VIEW_WIDTH = 800;
+var VIEW_HEIGHT = 480;
 
 var g_game = {
 	slashEffects: {
@@ -69,11 +73,12 @@ var g_game = {
 
 window.addEventListener("load", function(event) {
 
-	VIEW_WIDTH = $(document).width();
-	VIEW_HEIGHT = $(document).height();
+	//VIEW_WIDTH = $(document).width();
+	//VIEW_HEIGHT = $(document).height();
 	Crafty.init(VIEW_WIDTH, VIEW_HEIGHT);
 	
-	g_game.wizardControls = getParameterByName('wizardControls').toUpperCase() || 'WASD1234';
+	//g_game.wizardControls = getParameterByName('wizardControls').toUpperCase() || 'WASD1234';
+    g_game.wizardControls = String.fromCharCode(38) + String.fromCharCode(37) + String.fromCharCode(40) + String.fromCharCode(39);
 	if (getParameterByName('resetChars')) {
 		localStorage.saveGame = '';
 		localStorage.curLevel = 0;
@@ -112,10 +117,6 @@ function layoutGUI() {
 	$('#imgSpell_Fireball').css('left', 16*3);
 	$('#imgSpell_Sleep').css('left', 32*3);
 	$('#imgSpell_Lightening').css('left', 48*3);
-	$('#imgfighterBox').css({ top: pos.top,// + $('#cr-stage').height() - $('#imgfighterBox').height(), 
-							left: pos.left + $('#cr-stage').width() - $('#imgfighterBox').width() });
-	$('#divfighterControls').css({ top: pos.top + $('#imgfighterBox').height() + 24*3,
-							left: pos.left + $('#cr-stage').width() - $('#imgfighterBox').width()/2 - 48*3/2, width: 48*3, height: 48*3 });
 	$('#divOverlay').css({ width: $('#cr-stage').width(), height: $('#cr-stage').height(), left: pos.left+2, top: pos.top+2 });
 
 	$('#canvasMiniMap').css({ width: 64*3, height: 64*3, left: pos.left+3, top: pos.top + $('#cr-stage').height() - 64*3 - 6 });
@@ -124,10 +125,8 @@ function layoutGUI() {
 
 function centerOnPlayers() {
 	try {
-		var newX = Math.floor((g_game.fighter.locX + g_game.wizard.locX+1)/2);
-		var newY = Math.floor((g_game.fighter.locY + g_game.wizard.locY+1)/2);
-		Crafty.viewport.x = VIEW_WIDTH/2 - newX * TILE_WIDTH;
-		Crafty.viewport.y = VIEW_HEIGHT/2 - newY * TILE_HEIGHT;
+		Crafty.viewport.x = VIEW_WIDTH/2 - g_game.wizard.locX * TILE_WIDTH;
+		Crafty.viewport.y = VIEW_HEIGHT/2 - g_game.wizard.locY * TILE_HEIGHT;
 		//Crafty.viewport.pan('x', Crafty.viewport.x - (VIEW_WIDTH/2 - newX * TILE_WIDTH), 10);
 		//Crafty.viewport.pan('y', Crafty.viewport.y - (VIEW_HEIGHT/2 - newY * TILE_HEIGHT), 10);
 		updateMiniMap();
@@ -169,10 +168,6 @@ function getXPforLevel(level) {
 
 function savePlayers() {
 	var saveGame = {
-		fighter: {
-			xp: g_game.fighter.xp,
-			equipment: g_game.fighter.equipment
-		},
 		wizard: {
 			xp: g_game.wizard.xp,
 			equipment: g_game.wizard.equipment
@@ -186,12 +181,6 @@ function savePlayers() {
 function restorePlayers() {
 	if (localStorage.saveGame) {
 		var saveGame = $.parseJSON(localStorage.saveGame);
-		g_game.fighter.xp = saveGame.fighter.xp;
-		g_game.fighter.equipment = saveGame.fighter.equipment;
-		g_game.fighter.addXP(0);
-		g_game.fighter.calcStats();
-		g_game.fighter.dressInEquipment();
-		g_game.fighter.health = g_game.fighter.maxHealth;
 
 		g_game.wizard.xp = saveGame.wizard.xp;
 		g_game.wizard.equipment = saveGame.wizard.equipment;
@@ -207,11 +196,11 @@ function updateMiniMap() {
 		var drawingCanvas = document.getElementById('canvasMiniMap');
 		var context = drawingCanvas.getContext('2d');
 		
-		for (var y=0;y<Dungeon.map_size;y++) {
-			for (var x=0;x<Dungeon.map_size;x++) {
+		for (var y=0;y<g_game.mapTiles[0].length;y++) {
+			for (var x=0;x<g_game.mapTiles.length;x++) {
 				context.fillStyle = '#000';
 				if (g_game.mapReveal[y][x]) {
-					var tile = Dungeon.map[x][y];
+					var tile = g_game.mapTiles[x][y];
 					if (tile == 1) {
 						context.fillStyle = '#005784';
 					}
@@ -222,17 +211,17 @@ function updateMiniMap() {
 				context.fillRect(x*6,y*3,6,3);
 			}
 		}
-		if (g_game.mapReveal[g_game.entrance.y/TILE_HEIGHT][g_game.entrance.x/TILE_WIDTH]) {
-			context.fillStyle = '#44891A';
-			context.fillRect((g_game.entrance.x/TILE_WIDTH)*6-1,(g_game.entrance.y/TILE_HEIGHT)*3-1,8,4);
-		}
+		//if (g_game.mapReveal[g_game.entrance.y/TILE_HEIGHT][g_game.entrance.x/TILE_WIDTH]) {
+		//	context.fillStyle = '#44891A';
+		//	context.fillRect((g_game.entrance.x/TILE_WIDTH)*6-1,(g_game.entrance.y/TILE_HEIGHT)*3-1,8,4);
+		//}
 		if (g_game.mapReveal[g_game.exit.y/TILE_HEIGHT][g_game.exit.x/TILE_WIDTH]) {
 			context.fillStyle = '#BE2633';
 			context.fillRect((g_game.exit.x/TILE_WIDTH)*6-1,(g_game.exit.y/TILE_HEIGHT)*3-1,8,4);
 		}
 		
 		context.fillStyle = '#fff';
-		context.fillRect(g_game.fighter.locX*6,g_game.fighter.locY*3,6,3);
+		//context.fillRect(g_game.fighter.locX*6,g_game.fighter.locY*3,6,3);
 		context.fillRect(g_game.wizard.locX*6,g_game.wizard.locY*3,6,3);
 
 }
@@ -457,11 +446,6 @@ function doCraftyInitialization() {
 								validKey = true;
 							}
 						}
-						for (var i=0;i<g_game.fighter.playerControls.length;i++) {
-							if (evt.key == g_game.fighter.playerControls.charCodeAt(i)) {
-								validKey = true;
-							}
-						}
 						if (!validKey) {
 							fadeOutControls();
 						}
@@ -469,9 +453,9 @@ function doCraftyInitialization() {
 					}
 					this.performMove(movement);
 				}).bind('Move', function() {
-					for (var y=Math.max(0, this.locY-8);y<Math.min(Dungeon.map_size, this.locY+8);y++) {
-						for (var x=Math.max(0, this.locX-8);x<Math.min(Dungeon.map_size, this.locX+8);x++) {
-							if (x >= 0 && x < Dungeon.map_size && y >= 0 && y < Dungeon.map_size 
+					for (var y=Math.max(0, this.locY-8);y<Math.min(g_game.mapTiles[0].length, this.locY+8);y++) {
+						for (var x=Math.max(0, this.locX-8);x<Math.min(g_game.mapTiles.length, this.locX+8);x++) {
+							if (x >= 0 && x < g_game.mapTiles.length && y >= 0 && y < g_game.mapTiles[0].length
 								&& Math.sqrt(Math.pow(this.locX - x, 2) + Math.pow(this.locY - y, 2)) < 6) {
 								
 								g_game.mapReveal[y][x] = true;
@@ -509,21 +493,10 @@ function doCraftyInitialization() {
 				this.$healthBar = $('#div' + type + 'Health');
 				this.$manaBar = $('#div' + type + 'Mana');
 				this.$xpBar = $('#div' + type + 'XP');
-				this.$txtLevel = $('#div' + type + 'LevelText');
-				this.$txtLevel.css({ left: this.posCharBox.left + 28*3, top: this.posCharBox.top + 40*3, 'font-family': GAME_FONT, 'font-size': '10pt' });
-				this.$txtOffense = $('#div' + type + 'AttackText');
-				this.$txtOffense.css({ left: this.posCharBox.left + 45*3, top: this.posCharBox.top + 18*3, 'font-family': GAME_FONT, 'font-size': '10pt' });
-				this.$txtDefense = $('#div' + type + 'DefenseText');
-				this.$txtDefense.css({ left: this.posCharBox.left + 66*3, top: this.posCharBox.top + 18*3, 'font-family': GAME_FONT, 'font-size': '10pt' });
-				this.$txtHealth = $('#div' + type + 'HealthText');
-				this.$txtHealth.css({ left: this.posCharBox.left + 50*3, top: this.posCharBox.top + 42*3, 'font-family': GAME_FONT, 'font-size': '10pt' });
+                var nameText = $('#div' + type + 'NameText');
+                nameText.css({ left: this.posCharBox.left + 54*2, top: this.posCharBox.top + 6*2, 'font-family': GAME_FONT, 'font-size': '12pt', 'font-weight': 'bold' });
+                nameText.html('Pidgeon<br>Jack');
 
-				if (type == 'wizard') {
-					this.$spellProgress = $('#divwizardSpellProgress');
-					this.$txtMana = $('#div' + type + 'ManaText');
-					this.$txtMana.css({ left: this.posCharBox.left + 58*3, top: this.posCharBox.top + 29*3, 'font-family': GAME_FONT, 'font-size': '10pt' });
-				}
-				
 				for (var key in this.equipment) {
 					if (key) {
 						this[key] = Crafty.e('2D, ' + RENDERING_MODE + ', ' + key + '_' + this.equipment[key])
@@ -535,9 +508,9 @@ function doCraftyInitialization() {
 			return this;
 		},
 		showHealth: function() {
-			var height = Math.floor(30 * this.health/this.maxHealth);
-			this.$healthBar.css({ height: height, left: this.posCharBox.left + 39*3, top: this.posCharBox.top + 32*3 + 30 - height });
-			height = this.maxMana == 0 ? '0' : Math.floor(42 * this.mana/this.maxMana);
+			var width = Math.floor(80 * this.health/this.maxHealth);
+			this.$healthBar.css({ width: width, left: this.posCharBox.left + 36*2, top: this.posCharBox.top + 55*2 });
+			var height = this.maxMana == 0 ? '0' : Math.floor(42 * this.mana/this.maxMana);
 			this.$manaBar.css({ height: height, left: this.posCharBox.left + 67*3, top: this.posCharBox.top + 31*3 + 42 - height });
 
 			var divisor = 0;
@@ -550,14 +523,7 @@ function doCraftyInitialization() {
 			}
 			var width = Math.floor(60 * (this.xp - subtract)/(divisor - subtract));
 			this.$xpBar.css({ width: width, left: this.posCharBox.left + 3*3, top: this.posCharBox.top + 40*3 });
-			this.$txtLevel.text(this.level);
-			this.$txtOffense.text(this.offense);
-			this.$txtDefense.text(this.defense);
-			this.$txtHealth.text(this.health);
-			if (this.$txtMana) {
-				this.$txtMana.text(this.mana);
-			}
-		
+
 		},
 		addXP: function(amt) {
 			this.xp += amt;
@@ -656,7 +622,6 @@ function doCraftyInitialization() {
 		},
 		doDestroy: function() {
 			g_game.wizard.destroy();
-			g_game.fighter.destroy();
 			setTimeout(function() {
 				Crafty.scene("death");
 			}, 3000);
@@ -1166,30 +1131,58 @@ function doCraftyInitialization() {
 			g_game.slashEffects.objArray.push(Crafty.e('SlashEffect').SlashEffect());
 		}
 
-		//Crafty.e('Treasure').Treasure(4, 3, 'pants', 1);
-		//Crafty.e('Treasure').Treasure(4, 4, 'helm', 4);
-		//Crafty.e('Treasure').Treasure(5, 5, 'staff', 3);
+		//Dungeon.Clear();
+		//Dungeon.Generate();
 
-		Dungeon.Clear();
-		Dungeon.Generate();
-		
-		/*if (g_game.mapReveal) {
-			for (var y=0;y<g_game.mapReveal.length;y++) {
-				for (var x=0;x<g_game.mapReveal[y].length;x++) {
-					g_game.mapReveal[y][x] = false;
-				}
-			}
-		}
-		else {
-		}*/
+        var w = 48, h = 48;
+        g_game.mapTiles = [];
+        for (var x=0;x<w;x++) {
+            g_game.mapTiles[x] = [];
+            for (var y=0;y<h;y++) {
+                g_game.mapTiles[x][y] = 0;
+            }
+        }
+
+        var generator = new ROT.Map.Uniform(w, h, {
+            roomWidth: [4, 10],
+            roomHeight: [4, 10],
+            timeLimit: 10000
+        });
+
+        for (var i=0; i<4; i++) {
+            //var display = new ROT.Display({width:w, height:h, fontSize:6});
+            //SHOW(display.getContainer());
+            generator.create();
+        }
+        generator.create(function(x,y,v) {
+            if (v === 0) {
+                g_game.mapTiles[x][y] = 1;
+            }
+        });
+
+        // make walls
+        for (var y=0;y<h;y++) {
+            for (var x=0;x<w;x++) {
+                if (g_game.mapTiles[x][y] == 1) {
+                    for (var i=-1;i<=1;i++) {
+                        for (var j=-1;j<=1;j++) {
+                            if (g_game.mapTiles[x+j] && g_game.mapTiles[x+j][y+i] !== undefined && g_game.mapTiles[x+j][y+i] === 0){
+                                g_game.mapTiles[x+j][y+i] = 2;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 		g_game.mapReveal = [];
-		
+
 		var bEntrancePlaced = false;
-		for (var y=0;y<Dungeon.map_size;y++) {
+		for (var y=0;y<g_game.mapTiles[0].length;y++) {
 			g_game.mapReveal[y] = [];
-			for (var x=0;x<Dungeon.map_size;x++) {
-				g_game.mapReveal[y][x] = false;
-				var tile = Dungeon.map[x][y];
+			for (var x=0;x<g_game.mapTiles.length;x++) {
+				g_game.mapReveal[y][x] = true;
+				var tile = g_game.mapTiles[x][y];
  				if (tile == 2) {
 					var sprite = GAME.DUNGEONLEVELS[g_game.curLevel].graphics.wall;
 					if (false) { //!bEntrancePlaced) {
@@ -1218,25 +1211,14 @@ function doCraftyInitialization() {
 		}
 
 		layoutGUI();
-		var bFighterPlaced = false;
 		var bWizardPlaced = false;
-		for (var y=0;y<Dungeon.map_size;y++) {
-			for (var x=0;x<Dungeon.map_size;x++) {
-				if (Dungeon.map[x][y] == 1) {
+		for (var y=0;y<g_game.mapTiles[0].length;y++) {
+			for (var x=0;x<g_game.mapTiles.length;x++) {
+				if (g_game.mapTiles[x][y] == 1) {
 					if (!bWizardPlaced) {
 						g_game.wizard = Crafty.e('Wizard')
 							.Wizard(x, y, g_game.wizardControls);
 						bWizardPlaced = true;
-					}
-					else if (!bFighterPlaced) {
-						g_game.fighter = Crafty.e('Fighter')
-							.Fighter(x, y, String.fromCharCode(38) + String.fromCharCode(37) + String.fromCharCode(40) + String.fromCharCode(39));
-						bFighterPlaced = true;
-						// for testing
-						/*g_game.exit = Crafty.e('2D, ' + RENDERING_MODE + ', exit, Collision, LitObject')
-							.attr({ x: (x+1)*TILE_WIDTH, y: y*TILE_HEIGHT, z: 90})
-							.collision()
-							.LitObject();*/
 					}
 				}
 			}
@@ -1247,10 +1229,10 @@ function doCraftyInitialization() {
 		var bBossPlaced = false;
 		var bExitPlaced = false;
 		var dungeonLevel = GAME.DUNGEONLEVELS[g_game.curLevel];
-		for (var y=Dungeon.map_size-1;y>=0;y--) {
-			for (var x=Dungeon.map_size-1;x>=0;x--) {
+		for (var y=g_game.mapTiles[0].length-1;y>=0;y--) {
+			for (var x=g_game.mapTiles.length-1;x>=0;x--) {
 				if (!(y<10 && x<10)) {		// not in first room, please
-					if (Dungeon.map[x][y] == 1 && Math.random() < dungeonLevel.spawnRate) {
+					if (g_game.mapTiles[x][y] == 1 && Math.random() < dungeonLevel.spawnRate) {
 						var rand = Math.random() * 10;
 						var bMobPlaced = false;
 						var chanceTotal = 0;
@@ -1286,7 +1268,7 @@ function doCraftyInitialization() {
 		
 		// draw minimap
 		var pos = $('#cr-stage').offset();
-		$('#canvasMiniMap').css({ width: Dungeon.map_size*3, height: Dungeon.map_size*3, left: pos.left+6*3, top: pos.top + $('#cr-stage').height() - Dungeon.map_size*3 - 3*3 });
+		$('#canvasMiniMap').css({ width: g_game.mapTiles.length*3, height: g_game.mapTiles[0].length*3, left: pos.left+6*3, top: pos.top + $('#cr-stage').height() - g_game.mapTiles[0].length*3 - 3*3 });
 		
 		centerOnPlayers();
 		fadeOutControls();
@@ -1430,19 +1412,19 @@ function doCraftyInitialization() {
 
 			Crafty.sprite(1, './images/crl_chars_x' + ZOOM + '.gif', {
 				fighter: [0*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				wizard: [0*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
+				wizard: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
 			});
 
 			Crafty.sprite(1, './images/crl_terrain_x' + ZOOM + '.gif', {
 				wall_brick: [0*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TILE_HEIGHT*1.5 + 3],
 				ceiling_brick: [0*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
-				floor_cracks: [1*TERRAIN_WIDTH, 5*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				floor_cracks: [1*TERRAIN_WIDTH, 5*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT]
 			});
 
 			Crafty.sprite(1, './images/crl_mons32_x' + ZOOM + '.gif', {
 				rat: [0*TILE_WIDTH, 8*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				rat_king: [8*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				bat: [7*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				bat: [7*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
 			});
 
 			
@@ -1487,7 +1469,7 @@ function doCraftyInitialization() {
 				floor_mouldy: [9*TILE_WIDTH, 12*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				entrance: [8*TILE_WIDTH, 14*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				exit_closed: [7*TILE_WIDTH, 16*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				exit: [14*TILE_WIDTH, 16*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				exit: [14*TILE_WIDTH, 16*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
 			});
 
 			Crafty.sprite(1, './images/oryx_roguelike_b_graveyard.png', {
@@ -1515,7 +1497,7 @@ function doCraftyInitialization() {
 			});
 			
 			Crafty.sprite(1, './images/oryx_roguelike_b_landmark.png', {
-				scene_landmark1: [24, 456, 240, 120],
+				scene_landmark1: [24, 456, 240, 120]
 			});
 
 			
@@ -1553,8 +1535,8 @@ function doCraftyInitialization() {
 				formats: [ "wav" ]
 			});
 		
-			Crafty.scene("intro");
-			//Crafty.scene("main");
+			//Crafty.scene("intro");
+			Crafty.scene("main");
 			
 		});
 	});
@@ -1729,17 +1711,13 @@ function playSong(newSong) {
 </head>
 <body>
 
-<div id="divGUI" style="width: 100%, height: 100%">
-	<img id="imgwizardBox" src="./images/charbox_wizard.png" style="position: absolute;z-index: 10000;" />
-	<div id="divwizardHealth" style="background: #BE2633;position: absolute;width: 33px; height: 30px;z-index: 9000"></div> 
+<div id="divGUI" style="width: 100%; height: 100%;">
+	<img id="imgwizardBox" src="./images/charSheet.png" style="position: absolute;z-index: 10000;" />
+	<div id="divwizardHealth" style="background: #BE2633;position: absolute;width: 80px; height: 12px;z-index: 9000"></div>
 	<div id="divwizardMana" style="background: #005784;position: absolute;width: 30px; height: 42px;z-index: 9000"></div> 
 	<div id="divwizardXP" style="background: #EB8931;position: absolute;width: 30px; height: 9px;z-index: 11000"></div> 
-	<!--div id="divwizardSpellProgress" style="background-image: url(./images/spellProgress.png);height: 48px; width: 240px;position: absolute;z-index: 11000"></div--> 
-	<div id="divwizardLevelText" style="position: absolute;z-index: 11000; color: #9D9D9D; text-align: center;">00</div> 
-	<div id="divwizardAttackText" style="position: absolute;z-index: 11000; color: #9D9D9D; text-align: center;">00</div> 
-	<div id="divwizardDefenseText" style="position: absolute;z-index: 11000; color: #9D9D9D; text-align: center;">00</div> 
-	<div id="divwizardHealthText" style="position: absolute;z-index: 11000; color: #9D9D9D; text-align: center;">00</div> 
-	<div id="divwizardManaText" style="position: absolute;z-index: 11000; color: #9D9D9D; text-align: center;">00</div> 
+	<!--div id="divwizardSpellProgress" style="background-image: url(./images/spellProgress.png);height: 48px; width: 240px;position: absolute;z-index: 11000"></div-->
+    <div id="divwizardNameText" class='nameText' style="position: absolute;z-index: 11000; color: #9D9D9D; text-align: center;">00</div>
 	<div id="divwizardSpells" style="background-image: url(./images/spell_background.png); position: absolute;z-index: 11000;">
 		<img id="imgSpell_Missle" class="spellImage" src="./images/spell_missle.png" />
 		<img id="imgSpell_Fireball" class="spellImage" src="./images/spell_fireball.png" />
@@ -1759,18 +1737,8 @@ function playSong(newSong) {
 		<div id="divKeyRight" class="keyText">D</div>
 	</div> 
 	
-	<img id="imgfighterBox" src="./images/charbox_fighter.png" style="position: absolute;z-index: 10000;" />
-	<div id="divfighterHealth" style="background: #BE2633;position: absolute;width: 33px; height: 30px;z-index: 9000" ></div> 
-	<div id="divfighterMana" style="background: #005784;position: absolute;width: 30px; height: 42px;z-index: 9000" ></div> 
-	<div id="divfighterXP" style="background: #EB8931;position: absolute;width: 30px; height: 9px;z-index: 11000"></div> 
-	<div id="divfighterLevelText" style="position: absolute;z-index: 11000; color: #9D9D9D; text-align: center;">00</div> 
-	<div id="divfighterAttackText" style="position: absolute;z-index: 11000; color: #9D9D9D; text-align: center;">00</div> 
-	<div id="divfighterDefenseText" style="position: absolute;z-index: 11000; color: #9D9D9D; text-align: center;">00</div> 
-	<div id="divfighterHealthText" style="position: absolute;z-index: 11000; color: #9D9D9D; text-align: center;">00</div> 
-	<div id="divfighterControls" class="playerControls" style="background-image: url(./images/controls.png); position: absolute;z-index: 11000;"></div> 
-	
 	<canvas id="canvasMiniMap" style="position: absolute;z-index: 5000; border: 2px solid; opacity: 0.8;"></canvas>
 	
-	<div id="divOverlay" style="background-image: url(./images/meshx22.png);background-repeat:repeat;position: absolute;z-index: 8000"></div> 
+	<!--div id="divOverlay" style="background-image: url(./images/meshx22.png);background-repeat:repeat;position: absolute;z-index: 8000"></div-->
 </div>	
 </body>
