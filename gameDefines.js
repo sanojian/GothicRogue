@@ -49,6 +49,13 @@ window.GAME = {
 			slot: 1,
 			z: 110
 		},
+		pistol: {
+			classes: ['gunman'],
+			defense: [0, 0, 0, 0, 0],
+			offense: [1, 2, 3, 5, 8],
+			slot: 0,
+			z: 110
+		},
 		robe: {
 			classes: ['wizard'],
 			defense: [2, 3, 5, 8, 12],

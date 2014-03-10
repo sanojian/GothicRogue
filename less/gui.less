@@ -1,0 +1,38 @@
+@import "./defines";
+
+body, html { margin:0; padding: 0; overflow:hidden; font-family:Arial; font-size:20px }
+#cr-stage { border:2px solid black; margin:5px auto; color:white }
+
+.miniMapSquare {
+  width: 3px;
+  height: 3px;
+  display: block;
+}
+.keyText {
+  position: absolute;
+  font-weight: normal;
+  font-size: 18px;
+  text-align: center;
+  color: #B2DCEF;
+}
+img.spellImage {
+  position: absolute;
+  visibility: hidden;
+}
+div.nameText {
+  line-height: 16px;
+  text-align: left;
+  position: absolute;
+  z-index: 11000;
+  color: #9D9D9D;
+}
+#canvasMiniMap {
+  opacity: 0.5;
+}
+div.charSlot {
+  position: absolute;
+  z-index: 11000;
+  width: 32px;
+  height: 32px;
+  background-image: url("../../images/crl_items_x2.gif");
+}
