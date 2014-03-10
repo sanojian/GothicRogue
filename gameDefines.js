@@ -140,6 +140,18 @@ window.GAME = {
 			{ health: 28, mana: 36 },
 			{ health: 31, mana: 40 },
 			{ health: 35, mana: 43 }
+		],
+		gunman: [
+			{ health: 10, mana: 0 },
+			{ health: 12, mana: 0 },
+			{ health: 14, mana: 0 },
+			{ health: 26, mana: 0 },
+			{ health: 36, mana: 0 },
+			{ health: 40, mana: 0 },
+			{ health: 45, mana: 0 },
+			{ health: 50, mana: 0 },
+			{ health: 55, mana: 0 },
+			{ health: 60, mana: 0 }
 		]
 	},
 	DUNGEONLEVELS: [

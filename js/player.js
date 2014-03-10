@@ -70,14 +70,16 @@ function init_Player() {
 			this.playerControls = controls;
 
 			// meters
-			this.posCharBox = $('#img' + type + 'Box').offset();
-			this.$healthBar = $('#div' + type + 'Health');
-			this.$manaBar = $('#div' + type + 'Mana');
-			this.$xpBar = $('#div' + type + 'XP');
-			var nameText = $('#div' + type + 'NameText');
+			this.posCharBox = $('#imgCharBox').offset();
+			this.$healthBar = $('#divCharHealth');
+			this.$manaBar = $('#divCharMana');
+			this.$xpBar = $('#divCharXP');
+			var nameText = $('#divCharNameText');
 			nameText.css({ left: this.posCharBox.left + 54*2, top: this.posCharBox.top + 7*2, 'font-family': GAME_FONT, 'font-size': '12pt', 'font-weight': 'bold' });
 			nameText.html('Pidgeon<br>&nbsp;&nbsp;&nbsp;Jack');
 
+			this.$charSlot0 = $('#charSlot0');
+			this.$charSlot1 = $('#charSlot1');
 			for (var key in this.equipment) {
 				if (key) {
 					this[key] = Crafty.e('2D, ' + RENDERING_MODE + ', ' + key + '_' + this.equipment[key])
@@ -85,6 +87,8 @@ function init_Player() {
 					this.attach(this[key]);
 				}
 			}
+
+			this.dressInEquipment();
 
 			return this;
 		},
@@ -144,38 +148,40 @@ function init_Player() {
 				for (var i=0;i<treasures.length;i++) {
 					var treasure = treasures[0].obj;
 					if (GAME.EQUIPMENT[treasure.treasureType].classes.indexOf(this.class) != -1 && treasure.treasureLevel > this.equipment[treasure.treasureType]) {
-						this[treasure.treasureType].sprite(GAME.EQUIPMENT[treasure.treasureType].slot*TILE_WIDTH, treasure.treasureLevel*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+						//this[treasure.treasureType].sprite(GAME.EQUIPMENT[treasure.treasureType].slot*TILE_WIDTH, treasure.treasureLevel*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
 						this.equipment[treasure.treasureType] = treasure.treasureLevel;
 						treasure.destroy();
 						g_game.sounds.pickup.play();
 						Crafty.e('FloatingText').FloatingText(this.locX-1, this.locY
-							//'A+' + GAME.EQUIPMENT[treasure.treasureType].offense[treasure.treasureLevel]
-							//+ '  D+' + GAME.EQUIPMENT[treasure.treasureType].defense[treasure.treasureLevel]
 							, getTextForLoot(treasure.treasureLevel)
 							, '#A3CE27');
 
-						this.calcStats();
+						this.dressInEquipment();
 					}
 				}
 			}
 		},
 		dressInEquipment: function() {
 			for (var key in this.equipment) {
-				this[key].sprite(GAME.EQUIPMENT[key].slot*TILE_WIDTH, this.equipment[key]*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+				//this[key].sprite(GAME.EQUIPMENT[key].slot*TILE_WIDTH, this.equipment[key]*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+				// remove defining class
+				this['$charSlot' + GAME.EQUIPMENT[key].slot].removeClass (function (index, css) {
+						return (css.match (/\bicon-\S+/g) || []).join(' ');
+					}).addClass('icon-' + key + '-' + this.equipment[key]);
+
 			}
+			this.calcStats();
 		},
 		lookForExit: function() {
 			var exits = this.hit('exit');
 			if (exits) {
 				g_game.curLevel = Math.min(GAME.DUNGEONLEVELS.length-1, parseInt(g_game.curLevel, 10) + 1);
-				savePlayers();
 				Crafty.scene("splash");
 				return
 			}
 			var exits = this.hit('entrance');
 			if (exits) {
 				g_game.curLevel = Math.max(0, parseInt(g_game.curLevel, 10) - 1);
-				savePlayers();
 				Crafty.scene("splash");
 				return
 			}
@@ -291,9 +297,23 @@ function init_Player() {
 	});
 
 	Crafty.c('Gunman', {
+		bShooting: false,
+		bReadyToFire: false,
 
 		Gunman: function(x, y, controls) {
-			this.requires('Player');
+			this.requires('Player, Delay')
+				.bind('KeyDown', function(evt) {
+					if (evt.key == Crafty.keys['1'] && !this.bShooting) {
+						this.bShooting = true;
+						this.spell = 'Missle';
+						Crafty.e('FloatingText')
+							.FloatingText(this.locX-1, this.locY,	'click', '#31A2F2', 50);
+
+						this.delay(function() {
+							this.bReadyToFire = true;
+						}, 500);
+					}
+				});
 
 			this.equipment = {
 				pistol: 0
@@ -307,10 +327,10 @@ function init_Player() {
 			return this;
 		},
 		performMove: function(movement) {
-			if (this.bCasting) {
+			if (this.bReadyToFire) {
 				Crafty.e(this.spell)
 					[this.spell](this.locX, this.locY, movement, this, 'Creature');
-				this.bCasting = false;
+				this.bReadyToFire = this.bShooting = false;
 			}
 			else {
 				this.moveMob(movement);

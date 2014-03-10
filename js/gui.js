@@ -40,7 +40,7 @@ function updateMiniMap() {
 function layoutGUI() {
 	$('#divGUI').show();
 	var pos = $('#cr-stage').offset();
-	$('#imgwizardBox').css({
+	$('#imgCharBox').css({
 		top: pos.top,
 		left: pos.left
 	});
@@ -52,14 +52,14 @@ function layoutGUI() {
 		top: pos.top + 53 + 5,
 		left: pos.left + 165 + 5
 	});
-	$('#divwizardControls').css({ top: pos.top + $('#imgwizardBox').height() + 24*3,
+	$('#divCharControls').css({ top: pos.top + $('#imgCharBox').height() + 24*3,
 		left: pos.left + $('#imgwizardBox').width()/2 - 48*3/2, width: 48*3, height: 48*3 });
 	$('div.keyText').css('font-family', GAME_FONT);
-	$('#divKeyUp').css({ left: $('#divwizardControls').width()/2-3*3, top: 12*3 });
-	$('#divKeyLeft').css({ left: 12*3, top: $('#divwizardControls').height()/2-3*3 });
-	$('#divKeyRight').css({ left: 30*3, top: $('#divwizardControls').height()/2-3*3 });
-	$('#divKeyDown').css({ left: $('#divwizardControls').width()/2-3*3, top: 30*3 });
-	$('#divwizardSpells').css({ top: pos.top + $('#imgwizardBox').height() + 3*3,
+	$('#divKeyUp').css({ left: $('#divCharControls').width()/2-3*3, top: 12*3 });
+	$('#divKeyLeft').css({ left: 12*3, top: $('#divCharControls').height()/2-3*3 });
+	$('#divKeyRight').css({ left: 30*3, top: $('#divCharControls').height()/2-3*3 });
+	$('#divKeyDown').css({ left: $('#divCharControls').width()/2-3*3, top: 30*3 });
+	$('#divwizardSpells').css({ top: pos.top + $('#imgCharBox').height() + 3*3,
 		left: pos.left + $('#imgwizardBox').width()/2 - 64*3/2, width: 64*3, height: 16*3 });
 	$('#divwizardSpellControls').css({
 		top: $('#divwizardSpells').offset().top + 14*3,

@@ -102,32 +102,6 @@ function getXPforLevel(level) {
 	return amt;
 }
 
-function savePlayers() {
-	var saveGame = {
-		wizard: {
-			xp: g_game.wizard.xp,
-			equipment: g_game.wizard.equipment
-		}
-	}
-
-	localStorage.curLevel = parseInt(g_game.curLevel, 10);
-	localStorage.saveGame = JSON.stringify(saveGame);
-}
-
-function restorePlayers() {
-	if (localStorage.saveGame) {
-		var saveGame = $.parseJSON(localStorage.saveGame);
-
-		g_game.wizard.xp = saveGame.wizard.xp;
-		g_game.wizard.equipment = saveGame.wizard.equipment;
-		g_game.wizard.addXP(0);
-		g_game.wizard.calcStats();
-		g_game.wizard.dressInEquipment();
-		g_game.wizard.health = g_game.wizard.maxHealth;
-		g_game.wizard.mana = g_game.wizard.maxMana;
-	}
-}
-
 function doCraftyInitialization() {
 
     init_Mob();
@@ -161,34 +135,34 @@ function playSong(newSong) {
 <body>
 
 <div id="divGUI" style="width: 100%; height: 100%;">
-	<img id="imgwizardBox" src="./images/charSheet.png" style="position: absolute;z-index: 10000;" />
+	<img id="imgCharBox" src="./images/charSheet.png" style="position: absolute;z-index: 10000;" />
     <div id="charSlot0" class="charSlot icon-pistol-2"></div>
     <div id="charSlot1" class="charSlot icon-knuckles-0"></div>
-	<div id="divwizardHealth" style="background: #BE2633;position: absolute;width: 80px; height: 12px;z-index: 9000"></div>
-	<div id="divwizardMana" style="background: #005784;position: absolute;width: 30px; height: 42px;z-index: 9000"></div> 
-	<div id="divwizardXP" style="background: #EB8931;position: absolute;width: 30px; height: 9px;z-index: 11000"></div> 
+	<div id="divCharHealth" style="background: #BE2633;position: absolute;width: 80px; height: 12px;z-index: 9000"></div>
+	<div id="divCharMana" style="background: #005784;position: absolute;width: 30px; height: 42px;z-index: 9000"></div>
+	<div id="divCharXP" style="background: #EB8931;position: absolute;width: 30px; height: 9px;z-index: 11000"></div>
 	<!--div id="divwizardSpellProgress" style="background-image: url(./images/spellProgress.png);height: 48px; width: 240px;position: absolute;z-index: 11000"></div-->
-    <div id="divwizardNameText" class='nameText'>00</div>
+    <div id="divCharNameText" class='nameText'>00</div>
 	<div id="divwizardSpells" style="background-image: url(./images/spell_background.png); position: absolute;z-index: 11000;">
 		<img id="imgSpell_Missle" class="spellImage" src="./images/spell_missle.png" />
 		<img id="imgSpell_Fireball" class="spellImage" src="./images/spell_fireball.png" />
 		<img id="imgSpell_Sleep" class="spellImage" src="./images/spell_sleep.png" />
 		<img id="imgSpell_Lightening" class="spellImage" src="./images/spell_lightening.png" />
 	</div>
-	<div id="divwizardSpellControls" class="playerControls" style="position: absolute;z-index: 120000;">
+	<div id="divCharSpellControls" class="playerControls" style="position: absolute;z-index: 120000;">
 		<div id="divKeySpell1" class="keyText">1</div>
 		<div id="divKeySpell2" class="keyText">2</div>
 		<div id="divKeySpell3" class="keyText">3</div>
 		<div id="divKeySpell4" class="keyText">4</div>
 	</div> 
-	<div id="divwizardControls" class="playerControls" style="background-image: url(./images/controls.png); position: absolute;z-index: 11000;">
+	<div id="divCharControls" class="playerControls" style="background-image: url(./images/controls.png); position: absolute;z-index: 11000;">
 		<div id="divKeyUp" class="keyText">W</div>
 		<div id="divKeyLeft" class="keyText">A</div>
 		<div id="divKeyDown" class="keyText">S</div>
 		<div id="divKeyRight" class="keyText">D</div>
 	</div> 
 	
-	<canvas id="canvasMiniMap" style="position: absolute;z-index: 5000; border: 2px solid; opacity: 0.8;"></canvas>
+	<canvas id="canvasMiniMap"></canvas>
 	
 	<!--div id="divOverlay" style="background-image: url(./images/meshx22.png);background-repeat:repeat;position: absolute;z-index: 8000"></div-->
 </div>	

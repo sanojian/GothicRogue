@@ -88,20 +88,18 @@ function init_scenes() {
 		}
 
 		layoutGUI();
-		var bWizardPlaced = false;
+		var bPlayerPlaced = false;
 		for (var y=0;y<g_game.mapTiles[0].length;y++) {
 			for (var x=0;x<g_game.mapTiles.length;x++) {
 				if (g_game.mapTiles[x][y] == 1) {
-					if (!bWizardPlaced) {
-						g_game.wizard = Crafty.e('Wizard')
-							.Wizard(x, y, g_game.wizardControls);
-						bWizardPlaced = true;
+					if (!bPlayerPlaced) {
+						g_game.wizard = Crafty.e('Gunman')
+							.Gunman(x, y, g_game.wizardControls);
+						bPlayerPlaced = true;
 					}
 				}
 			}
 		}
-
-		restorePlayers();
 
 		var bBossPlaced = false;
 		var bExitPlaced = false;
