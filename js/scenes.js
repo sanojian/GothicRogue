@@ -468,7 +468,7 @@ function init_scenes() {
 			.attr({ x: VIEW_WIDTH/2 - 3*108/2, y: VIEW_HEIGHT/2, z: 10 })
 
 		Crafty.e('2D, ' + RENDERING_MODE + ', Text').attr({ w: VIEW_WIDTH, x: 0, y: 64, z: 1000 })
-			.text("A Tale of Unearthly Ichor")
+			.text("Mystery of the Unearthly Ichor")
 			.textColor('#9D9D9D', 1)
 			.textFont({ size: "32pt", weight: 'bold', family: GAME_FONT })
 			.css({ 'text-align': 'center'})
