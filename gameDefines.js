@@ -49,6 +49,13 @@ window.GAME = {
 			slot: 1,
 			z: 110
 		},
+		sceptre: {
+			classes: ['peasant'],
+			defense: [0, 0, 0, 0, 0],
+			offense: [0, 0, 0, 0, 0],
+			slot: 0,
+			z: 110
+		},
 		pistol: {
 			classes: ['gunman'],
 			defense: [0, 0, 0, 0, 0],
@@ -142,6 +149,18 @@ window.GAME = {
 			{ health: 35, mana: 43 }
 		],
 		gunman: [
+			{ health: 10, mana: 0 },
+			{ health: 12, mana: 0 },
+			{ health: 14, mana: 0 },
+			{ health: 26, mana: 0 },
+			{ health: 36, mana: 0 },
+			{ health: 40, mana: 0 },
+			{ health: 45, mana: 0 },
+			{ health: 50, mana: 0 },
+			{ health: 55, mana: 0 },
+			{ health: 60, mana: 0 }
+		],
+		peasant: [
 			{ health: 10, mana: 0 },
 			{ health: 12, mana: 0 },
 			{ health: 14, mana: 0 },

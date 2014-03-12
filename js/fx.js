@@ -46,7 +46,7 @@ function init_fx() {
 
 	Crafty.c('LightSource', {
 
-		LightSource: function(cx, cy, d) {
+		LightSource: function(cx, cy, d, intensity) {
 			this.requires('2D, ' + RENDERING_MODE + ', Collision')
 				.attr( { x: cx - d/2, y: cy - d/2, w: d, h: d } )
 				.collision()
@@ -57,6 +57,7 @@ function init_fx() {
 				});
 
 			this.radius = d;
+			this.intensity = intensity || 1;
 			return this;
 		},
 		lightUp: function(frame) {
@@ -65,7 +66,7 @@ function init_fx() {
 			for (var i=0;i<litObjs.length;i++) {
 				var dist = Math.sqrt(Math.pow(this.x + d/2 - litObjs[i].obj.x - TILE_WIDTH/2, 2)
 					+ Math.pow(this.y + d/2 - litObjs[i].obj.y - TILE_HEIGHT/2, 2));
-				litObjs[i].obj.light(0.2 + ((d/2) - dist)/(d/2), frame);
+				litObjs[i].obj.light(this.intensity*(0.2 + ((d/2) - dist)/(d/2)), frame);
 			}
 		}
 	});

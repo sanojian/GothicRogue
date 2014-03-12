@@ -73,10 +73,9 @@ function init_Player() {
 			this.posCharBox = $('#imgCharBox').offset();
 			this.$healthBar = $('#divCharHealth');
 			this.$manaBar = $('#divCharMana');
-			this.$xpBar = $('#divCharXP');
-			var nameText = $('#divCharNameText');
-			nameText.css({ left: this.posCharBox.left + 54*2, top: this.posCharBox.top + 7*2, 'font-family': GAME_FONT, 'font-size': '12pt', 'font-weight': 'bold' });
-			nameText.html('Pidgeon<br>&nbsp;&nbsp;&nbsp;Jack');
+			this.$nameText = $('#divCharNameText');
+			this.$nameText.css({ left: this.posCharBox.left + 54*2, top: this.posCharBox.top + 7*2, 'font-family': GAME_FONT, 'font-size': '12pt', 'font-weight': 'bold' });
+			this.$imgPortrait = $('#divPortrait');
 
 			this.$charSlot0 = $('#charSlot0');
 			this.$charSlot1 = $('#charSlot1');
@@ -106,57 +105,31 @@ function init_Player() {
 			for (var i=0;i<this.level-1;i++) {
 				subtract += Math.pow(2, 2+i);
 			}
-			var width = Math.floor(60 * (this.xp - subtract)/(divisor - subtract));
-			this.$xpBar.css({ width: width, left: this.posCharBox.left + 3*3, top: this.posCharBox.top + 40*3 });
-
 		},
 		addXP: function(amt) {
-			this.xp += amt;
-			var level = 1;
-			if (this.xp >= 4 + 8 + 16 + 32 + 64 + 128 + 256 + 512 + 1024 + 2048)
-				level = 11;
-			else if (this.xp >= 4 + 8 + 16 + 32 + 64 + 128 + 256 + 512 + 1024)
-				level = 10;
-			else if (this.xp >= 4 + 8 + 16 + 32 + 64 + 128 + 256 + 512)
-				level = 9;
-			else if (this.xp >= 4 + 8 + 16 + 32 + 64 + 128 + 256)
-				level = 8;
-			else if (this.xp >= 4 + 8 + 16 + 32 + 64 + 128)
-				level = 7;
-			else if (this.xp >= 4 + 8 + 16 + 32 + 64)
-				level = 6;
-			else if (this.xp >= 4 + 8 + 16 + 32)
-				level = 5;
-			else if (this.xp >= 4 + 8 + 16)
-				level = 4;
-			else if (this.xp >= 4 + 8)
-				level = 3;
-			else if (this.xp >= 4)
-				level = 2;
-
-			if (this.level != level) {
-				// ding!
-				this.maxHealth = GAME.CHARLEVELS[this.playerType][Math.min(GAME.CHARLEVELS[this.playerType].length-1,level-1)].health;
-				this.maxMana = GAME.CHARLEVELS[this.playerType][Math.min(GAME.CHARLEVELS[this.playerType].length-1,level-1)].mana;
-			}
-			this.level = level;
-			this.showHealth();
 		},
 		searchForTreasure: function() {
-			var treasures = this.hit('Treasure');
+			var treasures = this.hit('loot');
 			if (treasures) {
 				for (var i=0;i<treasures.length;i++) {
 					var treasure = treasures[0].obj;
-					if (GAME.EQUIPMENT[treasure.treasureType].classes.indexOf(this.class) != -1 && treasure.treasureLevel > this.equipment[treasure.treasureType]) {
-						//this[treasure.treasureType].sprite(GAME.EQUIPMENT[treasure.treasureType].slot*TILE_WIDTH, treasure.treasureLevel*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
-						this.equipment[treasure.treasureType] = treasure.treasureLevel;
-						treasure.destroy();
-						g_game.sounds.pickup.play();
-						Crafty.e('FloatingText').FloatingText(this.locX-1, this.locY
-							, getTextForLoot(treasure.treasureLevel)
-							, '#A3CE27');
+					if (treasure.has('Treasure')) {
+						if (GAME.EQUIPMENT[treasure.treasureType].classes.indexOf(this.class) != -1 && treasure.treasureLevel > this.equipment[treasure.treasureType]) {
+							//this[treasure.treasureType].sprite(GAME.EQUIPMENT[treasure.treasureType].slot*TILE_WIDTH, treasure.treasureLevel*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+							this.equipment[treasure.treasureType] = treasure.treasureLevel;
+							treasure.destroy();
+							g_game.sounds.pickup.play();
+							Crafty.e('FloatingText').FloatingText(this.locX-1, this.locY
+								, getTextForLoot(treasure.treasureLevel)
+								, '#A3CE27');
 
-						this.dressInEquipment();
+							this.dressInEquipment();
+						}
+					}
+					else if (treasure.has('Ichor')) {
+						g_game.ichorAmount = Math.min(100, g_game.ichorAmount + treasure.treasureAmt);
+						treasure.destroy();
+						showIchorAmount();
 					}
 				}
 			}
@@ -316,12 +289,61 @@ function init_Player() {
 				});
 
 			this.equipment = {
-				pistol: 0
+				pistol: 2
 			}
 
 			this.class = 'gunman';
 
 			this.Player(x, y, 'gunman', controls);
+			this.$nameText.html('Pidgeon<br>&nbsp;&nbsp;&nbsp;Jack');
+			this.$imgPortrait.addClass('portrait-gunman');
+			this.calcStats();
+
+			return this;
+		},
+		performMove: function(movement) {
+			if (this.bReadyToFire) {
+				Crafty.e(this.spell)
+					[this.spell](this.locX, this.locY, movement, this, 'Creature');
+				this.bReadyToFire = this.bShooting = false;
+			}
+			else {
+				this.moveMob(movement);
+				this.searchForTreasure();
+				this.lookForExit();
+			}
+		}
+	});
+
+	Crafty.c('Peasant', {
+		bShooting: false,
+		bReadyToFire: false,
+
+		Peasant: function(x, y, controls) {
+			this.requires('Player, Delay')
+				.bind('KeyDown', function(evt) {
+					if (evt.key == Crafty.keys['1'] && !this.bShooting) {
+						this.bShooting = true;
+						this.spell = 'Missle';
+						Crafty.e('FloatingText')
+							.FloatingText(this.locX-1, this.locY,	'click', '#31A2F2', 50);
+
+						this.delay(function() {
+							this.bReadyToFire = true;
+						}, 500);
+					}
+				});
+
+			this.equipment = {
+				sceptre: 1,
+				knife: 1
+			}
+
+			this.class = 'peasant';
+
+			this.Player(x, y, 'peasant', controls);
+			this.$nameText.html('Mallory<br>&nbsp;&nbsp;&nbsp;Swenson');
+			this.$imgPortrait.addClass('portrait-peasant');
 			this.calcStats();
 
 			return this;

@@ -93,8 +93,8 @@ function init_scenes() {
 			for (var x=0;x<g_game.mapTiles.length;x++) {
 				if (g_game.mapTiles[x][y] == 1) {
 					if (!bPlayerPlaced) {
-						g_game.wizard = Crafty.e('Gunman')
-							.Gunman(x, y, g_game.wizardControls);
+						g_game.wizard = Crafty.e('Peasant')
+							.Peasant(x, y, g_game.wizardControls);
 						bPlayerPlaced = true;
 					}
 				}
@@ -141,6 +141,7 @@ function init_scenes() {
 			console.log(Crafty(dungeonLevel.mobs[i].sprite).length + ' ' + dungeonLevel.mobs[i].sprite + ' created...');
 		}
 
+		showIchorAmount();
 		centerOnPlayers();
 		fadeOutControls();
 
@@ -169,7 +170,7 @@ function init_scenes() {
 			,'./audio/music/DST-TheHauntedChapel.mp3'
 		], function() {
 
-			Crafty.sprite(1, './images/slash.png', {
+			Crafty.sprite(1, './images/slash_x' + ZOOM + '.png', {
 				slash_effect: [0*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
 			});
 
@@ -284,13 +285,18 @@ function init_scenes() {
 			Crafty.sprite(1, './images/crl_chars_x' + ZOOM + '.gif', {
 				fighter: [0*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				wizard: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				gunman: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
+				gunman: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				peasant: [3*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
 			});
 
 			Crafty.sprite(1, './images/crl_terrain_x' + ZOOM + '.gif', {
 				wall_brick: [0*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TILE_HEIGHT*1.5 + 3],
 				ceiling_brick: [0*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
 				floor_cracks: [1*TERRAIN_WIDTH, 5*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT]
+			});
+
+			Crafty.sprite(1, './images/crl_items_x' + ZOOM + '.gif', {
+				ichor: [4*TILE_WIDTH/2, 0*TILE_HEIGHT/2, TILE_WIDTH/2, TILE_HEIGHT/2]
 			});
 
 			Crafty.sprite(1, './images/crl_mons32_x' + ZOOM + '.gif', {

@@ -25,16 +25,26 @@ function init_Mob() {
 		moveMob: function(movement) {
 			this.locX += movement.x;
 			this.locY += movement.y;
+			if (movement.x < 0) {
+				this.flip();
+			}
+			else {
+				this.unflip();
+			}
 			this.attr({ x: this.locX * TILE_WIDTH, y: this.locY * TILE_HEIGHT });
 			var walls = this.hit('solid');
 			if (walls) {
-				this.moveMob({ x: 0- movement.x, y: 0 - movement.y});
+				this.locX -= movement.x;
+				this.locY -= movement.y;
+				this.attr({ x: this.locX * TILE_WIDTH, y: this.locY * TILE_HEIGHT });
 			}
 			else {
 				var mobs = this.hit('Mob');
 				if (mobs) {
 					this.attackMob(mobs[0].obj, movement);
-					this.moveMob({ x: 0- movement.x, y: 0 - movement.y});
+					this.locX -= movement.x;
+					this.locY -= movement.y;
+					this.attr({ x: this.locX * TILE_WIDTH, y: this.locY * TILE_HEIGHT });
 				}
 			}
 		},
@@ -57,6 +67,9 @@ function init_Mob() {
 						}
 						i++;
 					}
+				}
+				else {
+					Crafty.e('Ichor').Ichor(this.locX, this.locY, 'ichor', 3);
 				}
 
 				// flying bones
