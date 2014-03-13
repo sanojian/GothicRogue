@@ -106,7 +106,9 @@ function init_scenes() {
 		var dungeonLevel = GAME.DUNGEONLEVELS[g_game.curLevel];
 		for (var y=g_game.mapTiles[0].length-1;y>=0;y--) {
 			for (var x=g_game.mapTiles.length-1;x>=0;x--) {
-				if (!(y<10 && x<10)) {		// not in first room, please
+				var difPlayerX = g_game.wizard.x/TILE_WIDTH - x;
+				var difPlayerY = g_game.wizard.y/TILE_HEIGHT - y;
+				if (!(Math.abs(difPlayerX) < 6 && Math.abs(difPlayerY) < 6)) {		// not near player, please
 					if (g_game.mapTiles[x][y] == 1 && Math.random() < dungeonLevel.spawnRate) {
 						var rand = Math.random() * 10;
 						var bMobPlaced = false;
@@ -282,17 +284,25 @@ function init_scenes() {
 				icon_staff_4: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
 			});
 
+			Crafty.sprite(1, './images/crl_effects_x' + ZOOM + '.png', {
+				skull: [12*TILE_WIDTH, 16*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				bone: [9*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
+			});
+
 			Crafty.sprite(1, './images/crl_chars_x' + ZOOM + '.gif', {
 				fighter: [0*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				wizard: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				gunman: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				gunman: [3*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				peasant: [3*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
 			});
 
 			Crafty.sprite(1, './images/crl_terrain_x' + ZOOM + '.gif', {
 				wall_brick: [0*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TILE_HEIGHT*1.5 + 3],
 				ceiling_brick: [0*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
-				floor_cracks: [1*TERRAIN_WIDTH, 5*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT]
+				floor_cracks: [1*TERRAIN_WIDTH, 5*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				exit_closed: [2*TERRAIN_WIDTH, 9*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				exit: [8*TERRAIN_WIDTH, 9*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT]
+
 			});
 
 			Crafty.sprite(1, './images/crl_items_x' + ZOOM + '.gif', {
@@ -336,8 +346,8 @@ function init_scenes() {
 				death_mage: [16*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				necromancer: [2*TILE_WIDTH, 32*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 
-				skull: [214*3, 848*3, 12*3, 12*3],
-				bone: [256*3, 1020*3, 8*3, 8*3],
+				//skull: [214*3, 848*3, 12*3, 12*3],
+				//bone: [256*3, 1020*3, 8*3, 8*3],
 
 				//wall_brick: [0*TILE_WIDTH, 13*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				//ceiling_brick: [7*TILE_WIDTH, 12*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
@@ -345,9 +355,9 @@ function init_scenes() {
 				wall_mud: [2*TILE_WIDTH, 13*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				ceiling_mud: [13*TILE_WIDTH, 12*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				floor_mouldy: [9*TILE_WIDTH, 12*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				entrance: [8*TILE_WIDTH, 14*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				exit_closed: [7*TILE_WIDTH, 16*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				exit: [14*TILE_WIDTH, 16*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
+				entrance: [8*TILE_WIDTH, 14*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
+				//exit_closed: [7*TILE_WIDTH, 16*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				//exit: [14*TILE_WIDTH, 16*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
 			});
 
 			Crafty.sprite(1, './images/oryx_roguelike_b_graveyard.png', {

@@ -44,6 +44,10 @@ function layoutGUI() {
 		top: pos.top,
 		left: pos.left
 	});
+	$('#divCharHealth').css({
+		left: pos.left + 36*2,
+		top: pos.top + 55*2
+	});
 	$('#divPortrait').css({
 		top: pos.top + 15,
 		left: pos.left + 16
@@ -66,34 +70,20 @@ function layoutGUI() {
 		left: posMeter.left + 4
 	});
 
-	$('#divCharControls').css({ top: pos.top + $('#imgCharBox').height() + 24*3,
-		left: pos.left + $('#imgwizardBox').width()/2 - 48*3/2, width: 48*3, height: 48*3 });
-	$('div.keyText').css('font-family', GAME_FONT);
-	$('#divKeyUp').css({ left: $('#divCharControls').width()/2-3*3, top: 12*3 });
-	$('#divKeyLeft').css({ left: 12*3, top: $('#divCharControls').height()/2-3*3 });
-	$('#divKeyRight').css({ left: 30*3, top: $('#divCharControls').height()/2-3*3 });
-	$('#divKeyDown').css({ left: $('#divCharControls').width()/2-3*3, top: 30*3 });
-	//$('#divwizardSpells').css({ top: pos.top + $('#imgCharBox').height() + 3*3,
-	//	left: pos.left + $('#imgwizardBox').width()/2 - 64*3/2, width: 64*3, height: 16*3 });
-	//$('#divwizardSpellControls').css({
-	//	top: $('#divwizardSpells').offset().top + 14*3,
-	//	left: $('#divwizardSpells').offset().left,
-	//	width: $('#divwizardSpells').width()
-	//});
-	$('#divKeySpell1').css({ left: (16/2-2)*3 });
-	$('#divKeySpell2').css({ left: (3*16/2-2)*3 });
-	$('#divKeySpell3').css({ left: (5*16/2-2)*3 });
-	$('#divKeySpell4').css({ left: (7*16/2-2)*3 });
-	$('#imgSpell_Fireball').css('left', 16*3);
-	$('#imgSpell_Sleep').css('left', 32*3);
-	$('#imgSpell_Lightening').css('left', 48*3);
-	//$('#divOverlay').css({ width: $('#cr-stage').width(), height: $('#cr-stage').height(), left: pos.left+2, top: pos.top+2 });
-
 	$('#canvasMiniMap').css({ width: 64*3, height: 64*3, left: pos.left + $('#cr-stage').width() - 64*3 - 6, top: pos.top + 6 });
 
 }
 
 function showIchorAmount() {
+	if (g_game.persona == 0 && g_game.ichorAmount >= 50) {
+		var xTile = g_game.wizard.x / TILE_WIDTH;
+		var yTile = g_game.wizard.y / TILE_HEIGHT;
+		g_game.wizard.destroy();
+		g_game.wizard = Crafty.e('Gunman')
+			.Gunman(xTile, yTile, g_game.wizardControls);
+		g_game.ichorAmount = 0
+	}
+
 	var maxHeight = 153;
 	var height = Math.floor(maxHeight * g_game.ichorAmount / 100);
 	var posMeter = $('#imgIchorMeter').offset();

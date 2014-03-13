@@ -45,7 +45,7 @@ window.GAME = {
 		knife: {
 			classes: ['peasant'],
 			defense: [0, 0, 0, 0, 0],
-			offense: [1, 2, 3, 5, 8],
+			offense: [0, 1, 2, 5, 8],
 			slot: 1,
 			z: 110
 		},
@@ -61,6 +61,13 @@ window.GAME = {
 			defense: [0, 0, 0, 0, 0],
 			offense: [1, 2, 3, 5, 8],
 			slot: 0,
+			z: 110
+		},
+		knuckles: {
+			classes: ['gunman'],
+			defense: [0, 0, 0, 0, 0],
+			offense: [0, 1, 2, 5, 8],
+			slot: 1,
 			z: 110
 		},
 		robe: {
@@ -149,7 +156,7 @@ window.GAME = {
 			{ health: 35, mana: 43 }
 		],
 		gunman: [
-			{ health: 10, mana: 0 },
+			{ health: 6, mana: 0 },
 			{ health: 12, mana: 0 },
 			{ health: 14, mana: 0 },
 			{ health: 26, mana: 0 },
@@ -161,7 +168,7 @@ window.GAME = {
 			{ health: 60, mana: 0 }
 		],
 		peasant: [
-			{ health: 10, mana: 0 },
+			{ health: 6, mana: 0 },
 			{ health: 12, mana: 0 },
 			{ health: 14, mana: 0 },
 			{ health: 26, mana: 0 },
@@ -178,9 +185,9 @@ window.GAME = {
 			name: 'The Entryway',
 			spawnRate: 0.05,
 			mobs: [ 
-				{ sprite: 'rat_king', 	prob: 1,	type: 'fighter', 	level: 2, 	health: 22,	 	mana: 0, 	offense: 12, 	defense: 12		},
-				{ sprite: 'rat', 		prob: 5,	type: 'fighter', 	level: 1, 	health: 9, 	mana: 0, 	offense: 4, 	defense: 4 		},
-				{ sprite: 'bat', 		prob: 4,	type: 'fighter', 	level: 1, 	health: 9, 	mana: 0, 	offense: 4, 	defense: 4		}
+				{ sprite: 'rat_king', 	prob: 1,	type: 'fighter', 	level: 2, 	health: 10,	 	mana: 0, 	offense: 2, 	defense: 12		},
+				{ sprite: 'rat', 		prob: 5,	type: 'fighter', 	level: 1, 	health: 2, 	mana: 0, 	offense: 1, 	defense: 4 		},
+				{ sprite: 'bat', 		prob: 4,	type: 'fighter', 	level: 1, 	health: 2, 	mana: 0, 	offense: 1, 	defense: 4		}
 			],
 			graphics: {
 				wall: 'wall_brick',

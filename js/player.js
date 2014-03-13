@@ -45,23 +45,12 @@ function init_Player() {
 					}
 
 					centerOnPlayers();
-				}).bind('EnterFrame', function(frameObj) {
-					if (frameObj.frame % 19 == 0) {
-						this.mana = Math.min(this.maxMana, this.mana + 1);
-						if (type == 'wizard') {
-							this.checkSpellMana();
-						}
-						this.showHealth(type);
-					}
-					else if (frameObj.frame % 51 == 0) {
-						this.health = Math.min(this.maxHealth, this.health + 1);
-						this.showHealth(type);
-					}
-
+				}).bind('HealthChanged', function() {
+					this.showHealth();
 				}).Mob(x, y, type)
 
 			this.playerType = type;
-			this.maxHealth = GAME.CHARLEVELS[this.playerType][0].health;
+			this.health = this.maxHealth = GAME.CHARLEVELS[this.playerType][0].health;
 			this.maxMana = GAME.CHARLEVELS[this.playerType][0].mana;
 
 			var lightSource = Crafty.e('LightSource').LightSource(this.x + TILE_WIDTH/2, this.y + TILE_HEIGHT/2, 12*TILE_WIDTH);
@@ -88,23 +77,13 @@ function init_Player() {
 			}
 
 			this.dressInEquipment();
+			this.showHealth();
 
 			return this;
 		},
 		showHealth: function() {
-			var width = Math.floor(80 * this.health/this.maxHealth);
-			this.$healthBar.css({ width: width, left: this.posCharBox.left + 36*2, top: this.posCharBox.top + 55*2 });
-			var height = this.maxMana == 0 ? '0' : Math.floor(42 * this.mana/this.maxMana);
-			this.$manaBar.css({ height: height, left: this.posCharBox.left + 67*3, top: this.posCharBox.top + 31*3 + 42 - height });
-
-			var divisor = 0;
-			for (var i=0;i<this.level;i++) {
-				divisor += Math.pow(2, 2+i);
-			}
-			var subtract = 0;
-			for (var i=0;i<this.level-1;i++) {
-				subtract += Math.pow(2, 2+i);
-			}
+			var width = Math.floor(96 * this.health/this.maxHealth);
+			this.$healthBar.css({ width: width });
 		},
 		addXP: function(amt) {
 		},
@@ -186,13 +165,6 @@ function init_Player() {
 				Crafty.scene("death");
 			}, 3000);
 		}
-		/*syncSprites: function() {
-		 for (var key in this.equipment) {
-		 if (key) {
-		 this[key].attr({ x: this.x, y: this.y});
-		 }
-		 }
-		 }*/
 	});
 
 	Crafty.c('Wizard', {
@@ -276,7 +248,7 @@ function init_Player() {
 		Gunman: function(x, y, controls) {
 			this.requires('Player, Delay')
 				.bind('KeyDown', function(evt) {
-					if (evt.key == Crafty.keys['1'] && !this.bShooting) {
+					if (evt.key == Crafty.keys.SPACE && !this.bShooting) {
 						this.bShooting = true;
 						this.spell = 'Missle';
 						Crafty.e('FloatingText')
@@ -289,7 +261,8 @@ function init_Player() {
 				});
 
 			this.equipment = {
-				pistol: 2
+				pistol: 1,
+				knuckles: 1
 			}
 
 			this.class = 'gunman';
@@ -307,6 +280,10 @@ function init_Player() {
 					[this.spell](this.locX, this.locY, movement, this, 'Creature');
 				this.bReadyToFire = this.bShooting = false;
 			}
+			else if (this.bShooting) {
+				// cannot move
+				return;
+			}
 			else {
 				this.moveMob(movement);
 				this.searchForTreasure();
@@ -320,45 +297,26 @@ function init_Player() {
 		bReadyToFire: false,
 
 		Peasant: function(x, y, controls) {
-			this.requires('Player, Delay')
-				.bind('KeyDown', function(evt) {
-					if (evt.key == Crafty.keys['1'] && !this.bShooting) {
-						this.bShooting = true;
-						this.spell = 'Missle';
-						Crafty.e('FloatingText')
-							.FloatingText(this.locX-1, this.locY,	'click', '#31A2F2', 50);
-
-						this.delay(function() {
-							this.bReadyToFire = true;
-						}, 500);
-					}
-				});
+			this.requires('Player, Delay');
 
 			this.equipment = {
-				sceptre: 1,
+				sceptre: 0,
 				knife: 1
 			}
 
 			this.class = 'peasant';
 
 			this.Player(x, y, 'peasant', controls);
-			this.$nameText.html('Mallory<br>&nbsp;&nbsp;&nbsp;Swenson');
+			this.$nameText.html('Rebecca<br>&nbsp;&nbsp;&nbsp;Van Buren');
 			this.$imgPortrait.addClass('portrait-peasant');
 			this.calcStats();
 
 			return this;
 		},
 		performMove: function(movement) {
-			if (this.bReadyToFire) {
-				Crafty.e(this.spell)
-					[this.spell](this.locX, this.locY, movement, this, 'Creature');
-				this.bReadyToFire = this.bShooting = false;
-			}
-			else {
-				this.moveMob(movement);
-				this.searchForTreasure();
-				this.lookForExit();
-			}
+			this.moveMob(movement);
+			this.searchForTreasure();
+			this.lookForExit();
 		}
 	});
 

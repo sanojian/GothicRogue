@@ -28,7 +28,7 @@ function init_Mob() {
 			if (movement.x < 0) {
 				this.flip();
 			}
-			else {
+			else if (movement.x > 0){
 				this.unflip();
 			}
 			this.attr({ x: this.locX * TILE_WIDTH, y: this.locY * TILE_HEIGHT });
@@ -51,10 +51,11 @@ function init_Mob() {
 		takeDamage: function(amt, from) {
 
 			this.sleeping = false;
-			Crafty.e('FloatingText')
-				.FloatingText(this.locX, this.locY, amt, '#BE2633');
+			//Crafty.e('FloatingText')
+			//	.FloatingText(this.locX, this.locY, amt, '#BE2633');
 
 			this.health = Math.max(0, this.health - amt);
+			this.trigger('HealthChanged');
 			if (this.health <= 0) {
 				from.addXP(getXPforLevel(this.level));
 				// loot
@@ -69,7 +70,7 @@ function init_Mob() {
 					}
 				}
 				else {
-					Crafty.e('Ichor').Ichor(this.locX, this.locY, 'ichor', 3);
+					Crafty.e('Ichor').Ichor(this.locX, this.locY, 'ichor', 20);
 				}
 
 				// flying bones
@@ -93,10 +94,11 @@ function init_Mob() {
 			}
 		},
 		calcDamageTo: function(mob) {
-			var dmg = 1 + Math.floor(Math.random() * this.offense);
+			/*var dmg = 1 + Math.floor(Math.random() * this.offense);
 			var reduction = Math.random()*mob.defense/(30 * mob.level);
 			dmg = Math.floor(dmg - dmg*reduction);
-			return Math.max(1, dmg);
+			return Math.max(1, dmg);*/
+			return this.offense;
 		},
 		sleep: function() {
 			this.sleeping = true;
