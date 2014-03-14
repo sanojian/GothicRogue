@@ -17,7 +17,8 @@ module.exports = function(grunt) {
 			},
 			scripts: {
 				files: [
-					'js/*.js'
+					'js/*.js',
+					'dialog/*.js'
 				],
 				tasks: ['concat']
 			}
@@ -25,7 +26,7 @@ module.exports = function(grunt) {
 		concat: {
 			basic_and_extras: {
 				files: {
-					'public/js/game.js': ['js/gui.js', 'js/mob.js', 'js/player.js', 'js/fx.js', 'js/spells.js', 'js/world.js', 'js/scenes.js']
+					'public/js/game.js': ['js/*.js', 'dialog/*.js']//['js/gui.js', 'js/mob.js', 'js/player.js', 'js/fx.js', 'js/spells.js', 'js/world.js', 'js/scenes.js']
 				}
 			}
 		},

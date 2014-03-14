@@ -8,9 +8,6 @@ function init_scenes() {
 			g_game.slashEffects.objArray.push(Crafty.e('SlashEffect').SlashEffect());
 		}
 
-		//Dungeon.Clear();
-		//Dungeon.Generate();
-
 		var w = 48, h = 48;
 		g_game.mapTiles = [];
 		for (var x=0;x<w;x++) {
@@ -27,8 +24,6 @@ function init_scenes() {
 		});
 
 		for (var i=0; i<4; i++) {
-			//var display = new ROT.Display({width:w, height:h, fontSize:6});
-			//SHOW(display.getContainer());
 			generator.create();
 		}
 		generator.create(function(x,y,v) {
@@ -145,8 +140,102 @@ function init_scenes() {
 
 		showIchorAmount();
 		centerOnPlayers();
-		fadeOutControls();
 
+	});
+
+
+	Crafty.scene("mansion", function () {
+
+		g_game.mapTiles = [];
+		g_game.mapReveal = [];
+
+		for (var i=0;i<g_game.map.layers.length;i++) {
+			if (g_game.map.layers[i].type == 'objectgroup') {
+				// objects
+				for (var j=0;j<g_game.map.layers[i].objects.length;j++) {
+					var obj = g_game.map.layers[i].objects[j];
+					var el = Crafty.e('2D, ' + RENDERING_MODE + ', LitObject, maptile_' + obj.gid
+							+ (obj.properties && obj.properties.components ? ',' + obj.properties.components : ''))
+						.attr({ x: obj.x, y: obj.y, z: 110 })
+						.LitObject();
+					if (obj.properties && obj.properties.entity) {
+						el.addComponent(obj.properties.entity);
+						if (el[obj.properties.entity]) {
+							el[obj.properties.entity].apply(el, obj.properties.arguments ? obj.properties.arguments.split(',') : []);
+						}
+					}
+					if (obj.properties && obj.properties.contains) {
+						var contained = Crafty.e(obj.properties.contains);
+						contained[obj.properties.contains](el);
+					}
+					/*if (obj.properties && obj.properties.components) {
+						var comps = obj.properties.components.split(',');
+						for (var c=0;c<comps.length;c++) {
+							el.addComponent(comps[c]);
+						}
+					}*/
+
+				}
+			}
+			else if (g_game.map.layers[i].type == 'tilelayer') {
+				// tiles
+				for (var y=0;y<g_game.map.layers[i].height;y++) {
+					g_game.mapTiles[y] = [];
+					g_game.mapReveal[y] = [];
+					for (var x=0;x<g_game.map.layers[i].width;x++) {
+						g_game.mapTiles[y][x] = 0;
+						g_game.mapReveal[y][x] = false;
+						var tile = g_game.map.layers[i].data[x + y * g_game.map.layers[i].width];
+						if (tile > 0) {
+							var el = Crafty.e('2D, ' + RENDERING_MODE + ', LitObject, maptile_' + g_game.map.layers[i].data[x + y * g_game.map.layers[i].width])
+								.attr({ x: x * g_game.map.tilewidth, y: y * g_game.map.tileheight, z: 1 })
+								.LitObject();
+							if (g_game.map.layers[i].properties && g_game.map.layers[i].properties.components && g_game.map.layers[i].properties.components.indexOf('solid') != -1) {
+								el.addComponent('solid');
+								el.collision(new Crafty.polygon([0, 0], [TILE_WIDTH, 0],[TILE_WIDTH, TILE_HEIGHT], [0, TILE_HEIGHT]));
+								el.attr({ z: 100 });
+								g_game.mapTiles[x][y] = 2;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		layoutGUI();
+		g_game.wizard = Crafty.e('Peasant')
+			.Peasant(15, 28, g_game.wizardControls);
+
+		showIchorAmount();
+		centerOnPlayers();
+
+		Crafty.e('2D, ' + RENDERING_MODE + ', Text').attr({ w: VIEW_WIDTH, x: 2*TILE_WIDTH, y: 32 * TILE_HEIGHT, z: 1000 })
+			.text("Mystery of the Unearthly Ichor")
+			.textColor('#9D9D9D', 1)
+			.textFont({ size: "32pt", weight: 'bold', family: GAME_FONT })
+			.css({ 'text-align': 'center'})
+
+		Crafty.e('2D, ' + RENDERING_MODE + ', Text').attr({ w: VIEW_WIDTH, x: 8*TILE_WIDTH, y: 34 * TILE_HEIGHT, z: 1000 })
+			.text("created for 7drl by Sanojian")
+			.textColor('#777777', 1)
+			.textFont({ size: "14pt", weight: 'bold', family: GAME_FONT })
+			.css({ 'text-align': 'center'})
+
+		Crafty.e('2D, ' + RENDERING_MODE + ', Text, LitObject').attr({ w: 400, h: 32, x: 20*TILE_WIDTH, y: 6 * TILE_HEIGHT, z: 1000 })
+			.text("tiles by Oryx")
+			.textColor('#666666', 1)
+			.textFont({ size: "14pt", weight: 'bold', family: GAME_FONT })
+			.css({ 'text-align': 'center'})
+			.LitObject();
+
+		Crafty.e('2D, ' + RENDERING_MODE + ', Text, LitObject').attr({ w: 400, h: 32, x: 27*TILE_WIDTH, y: 0 * TILE_HEIGHT, z: 1000 })
+			.text("music by Deceased Superior Technician")
+			.textColor('#666666', 1)
+			.textFont({ size: "14pt", weight: 'bold', family: GAME_FONT })
+			.css({ 'text-align': 'center'})
+			.LitObject();
+
+		playSong('DST-PeacefulStreets');
 	});
 
 	Crafty.scene("loading", function () {
@@ -424,7 +513,8 @@ function init_scenes() {
 			});
 
 			//Crafty.scene("intro");
-			Crafty.scene("main");
+			//Crafty.scene("main");
+			loadMap('mansion');
 
 		});
 	});

@@ -1,11 +1,15 @@
 function init_world() {
 
 	Crafty.c('Treasure', {
-		Treasure: function(x, y, type, level) {
+		Treasure: function(type, level, x, y) {
 			this.requires('2D, ' + RENDERING_MODE + ', Collision, LitObject, loot, icon_' + type + '_' + level)
-				.attr({ x: x * TILE_WIDTH, y: y * TILE_HEIGHT, z: 90 })
-				.collision()
-				.LitObject();
+				.attr({ z: 90 });
+			if (x !== undefined) {
+				this.attr({ x: x * TILE_WIDTH, y: y * TILE_HEIGHT });
+			}
+			if (!this.has('LitObject')) {
+				this.addComponent('LitObject').LitObject();
+			}
 
 			this.treasureType = type;
 			this.treasureLevel = level;
@@ -29,6 +33,37 @@ function init_world() {
 
 			return this;
 		}
+	});
+
+}
+
+function loadMap(strMap) {
+
+	$.getJSON('./maps/' + strMap + '.json?' + Math.random(), function(data) {
+
+		for (var i=0;i<data.tilesets.length;i++) {
+			var myMap = new Object();
+			var width = data.tilesets[i].imagewidth / data.tilesets[i].tilewidth;
+			var height = data.tilesets[i].imageheight / data.tilesets[i].tileheight;
+
+			for (var y=0;y<height;y++)
+				for (var x=0;x<width;x++)
+					myMap['maptile_' + (data.tilesets[i].firstgid + y*width+x)] = [
+						x*data.tilesets[i].tilewidth,
+						y*data.tilesets[i].tileheight,
+						data.tilesets[i].tilewidth,
+						data.tilesets[i].tileheight
+					];
+
+			Crafty.sprite(1, './maps/' + data.tilesets[i].image, myMap);
+		}
+
+		g_game.map = data;
+		g_game.currentMap = strMap;
+
+		Crafty.scene("mansion"); //when everything is loaded, run the main scene
+		//playSong(data.properties.song);
+
 	});
 
 }

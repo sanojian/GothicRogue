@@ -99,7 +99,7 @@ function init_Player() {
 							treasure.destroy();
 							g_game.sounds.pickup.play();
 							Crafty.e('FloatingText').FloatingText(this.locX-1, this.locY
-								, getTextForLoot(treasure.treasureLevel)
+								, getTextForLoot(treasure.treasureLevel) + ' ' + treasure.treasureType
 								, '#A3CE27');
 
 							this.dressInEquipment();
@@ -157,6 +157,9 @@ function init_Player() {
 				mob.takeDamage(this.calcDamageTo(mob), this);
 				g_game.slashEffects.getNextEffect().showSlash(mob.x, mob.y, movement);
 				g_game.sounds['swing' + Math.ceil(Math.random()*3)].play();
+			}
+			else if (mob.has('DialogChar')) {
+				mob.showDialog();
 			}
 		},
 		doDestroy: function() {
@@ -301,7 +304,7 @@ function init_Player() {
 
 			this.equipment = {
 				sceptre: 0,
-				knife: 1
+				knife: 0
 			}
 
 			this.class = 'peasant';

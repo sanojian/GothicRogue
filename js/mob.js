@@ -12,10 +12,19 @@ function init_Mob() {
 		level: 1,
 
 		Mob: function(x, y, type) {
-			this.requires('2D, ' + RENDERING_MODE + ', Collision, Delay, LitObject, ' + type.toLowerCase())
-				.attr( { x: x * TILE_WIDTH, y: y * TILE_HEIGHT, z: 100 } )
-				.collision()
-				.LitObject();
+			this.requires('2D, ' + RENDERING_MODE + ', Collision, Delay');
+
+			if (type) {
+				this.addComponent(type.toLowerCase());
+			}
+			if (x !== undefined) {
+				this.attr( { x: x * TILE_WIDTH, y: y * TILE_HEIGHT, z: 100 } );
+			}
+			if (!this.has('LitObject')) {
+				this.addComponent('LitObject');
+				this.LitObject();
+			}
+
 
 			this.locX = x;
 			this.locY = y;
@@ -64,7 +73,7 @@ function init_Mob() {
 					var i = 0;
 					for (var key in GAME.EQUIPMENT) {
 						if (i == item) {
-							Crafty.e('Treasure').Treasure(this.locX, this.locY, key, this.level);
+							Crafty.e('Treasure').Treasure(key, this.level, this.locX, this.locY);
 						}
 						i++;
 					}
@@ -74,9 +83,9 @@ function init_Mob() {
 				}
 
 				// flying bones
-				for (var i=0;i<2 + Math.floor(Math.random()*3);i++) {
+				for (var i=0;i<1 + Math.floor(Math.random()*2);i++) {
 					Crafty.e('2D, ' + RENDERING_MODE + ', ' + (i==0 ? 'skull' : 'bone'))
-						.attr({ x: this.x + TILE_WIDTH/4 + TILE_WIDTH*Math.random(), y: this.y + TILE_HEIGHT/4 + Math.random()*TILE_HEIGHT/2, z: this.z+1 })
+						.attr({ x: this.x - TILE_WIDTH/3 + 2*Math.random()*TILE_WIDTH/3, y: this.y + TILE_WIDTH/4 + Math.random()*TILE_WIDTH/2, z: this.z+1 })
 						.bind('EnterFrame', function() {
 							this.frameCount = this.frameCount ? this.frameCount + 1 : 1;
 							this.dx = this.dx ? this.dx : 2 - Math.random() * 4;
@@ -184,6 +193,21 @@ function init_Mob() {
 				g_game.exit.removeComponent('exit_closed').addComponent('exit');
 			}
 			this.destroy();
+		}
+	});
+
+	Crafty.c('DialogChar', {
+
+		DialogChar: function(name) {
+			this.requires('Mob')
+				.Mob();
+
+			this.charName = name;
+
+			return this;
+		},
+		showDialog: function() {
+			Crafty.e('Dialog').Dialog(this.x + this.w/2, this.y, g_gameDialog[this.charName]);
 		}
 	});
 }

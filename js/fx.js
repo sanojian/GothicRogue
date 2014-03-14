@@ -47,6 +47,13 @@ function init_fx() {
 	Crafty.c('LightSource', {
 
 		LightSource: function(cx, cy, d, intensity) {
+			if (!cy) {
+				var parentEl = cx;
+				var cx = parentEl.x + parentEl.w/2;
+				var cy = parentEl.y + parentEl.h/2;
+				var d = TILE_WIDTH*6;
+			}
+
 			this.requires('2D, ' + RENDERING_MODE + ', Collision')
 				.attr( { x: cx - d/2, y: cy - d/2, w: d, h: d } )
 				.collision()
@@ -101,5 +108,51 @@ function init_fx() {
 			this.unlit = false;
 		}
 	});
+
+	Crafty.c('Dialog', {
+
+		Dialog: function(srcX, srcY, text) {
+			this.requires('2D, ' + RENDERING_MODE + ', Color, charDialog, Delay')
+				.attr({ w: 240, h: 80, z: 200 })
+				.attr({ x: srcX - this.w/2, y: srcY - this.h - TILE_HEIGHT/2})
+				.color('#aaaaaa');
+
+			this.totalText = text;
+			this.currentText = this.totalText.substring(0, 1);
+			this.theText = Crafty.e('2D, ' + RENDERING_MODE + ', Text')
+				.attr({ w: this.w, h: this.h, x: this.x + 8, y: this.y + 8, z: 210 })
+				.text(this.currentText)
+				.textColor('#222222', 1)
+				.textFont({ size: "12pt", family: GAME_FONT })
+				.css({ 'text-align': 'left'});
+			this.attach(this.theText);
+
+			this.showNextLetter(1);
+
+			return this;
+		},
+		showNextLetter: function(c) {
+			var self = this;
+			this.delay(function() {
+				var nextLetter = this.totalText.charAt(c);
+				if (nextLetter == '\n') {
+					nextLetter = '<br>';
+				}
+				self.currentText += nextLetter;
+				self.theText.text(self.currentText);
+				c++;
+				if (c <= this.totalText.length) {
+					self.showNextLetter(c);
+				}
+				else {
+					self.delay(function() {
+						self.destroy();
+					}, 2000);
+				}
+			}, 60);
+
+		}
+	});
+
 
 }
