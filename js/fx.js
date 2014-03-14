@@ -69,11 +69,17 @@ function init_fx() {
 		},
 		lightUp: function(frame) {
 			var d = this.radius;
+			var flicker = Math.random();
+			//d = d - d/3 + flicker*2*d/3;
+			var flicker = this.intensity;
+			if (true) {//flicker != 1) {
+				flicker = Math.min(1, this.intensity - this.intensity/4 + Math.random()*2*this.intensity/4);
+			}
 			var litObjs = this.hit('LitObject');
 			for (var i=0;i<litObjs.length;i++) {
 				var dist = Math.sqrt(Math.pow(this.x + d/2 - litObjs[i].obj.x - TILE_WIDTH/2, 2)
 					+ Math.pow(this.y + d/2 - litObjs[i].obj.y - TILE_HEIGHT/2, 2));
-				litObjs[i].obj.light(this.intensity*(0.2 + ((d/2) - dist)/(d/2)), frame);
+				litObjs[i].obj.light(flicker*(0.2 + ((d/2) - dist)/(d/2)), frame);
 			}
 		}
 	});
