@@ -103,21 +103,6 @@
                  "y":704
                 }, 
                 {
-                 "gid":531,
-                 "height":0,
-                 "name":"",
-                 "properties":
-                    {
-                     "entity":"DialogChar",
-                     "name":"Will"
-                    },
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":768,
-                 "y":544
-                }, 
-                {
                  "gid":276,
                  "height":0,
                  "name":"",
@@ -173,6 +158,21 @@
                  "width":0,
                  "x":712,
                  "y":244
+                }, 
+                {
+                 "gid":536,
+                 "height":0,
+                 "name":"",
+                 "properties":
+                    {
+                     "arguments":"MadameLucard",
+                     "entity":"DialogChar"
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":768,
+                 "y":544
                 }],
          "opacity":1,
          "type":"objectgroup",

@@ -44,9 +44,26 @@ function init_fx() {
 		}
 	});
 
+	Crafty.c('IchorExplode', {
+		IchorExplode: function(x, y) {
+			this.requires('2D, ' + RENDERING_MODE + ', ichorExplode, SpriteAnimation')
+				.animate('explode', 4, 1, 7)
+				.attr({ x: x, y: y, z: 200 })
+				.bind('AnimationEnd', function() {
+					this.destroy();
+				});
+
+			this.animate('explode', 30, 0);
+			g_game.sounds.transform.play();
+
+			return this;
+		}
+	});
+
+
 	Crafty.c('LightSource', {
 
-		LightSource: function(cx, cy, d, intensity) {
+		LightSource: function(cx, cy, d, intensity, bSkipFlicker) {
 			if (!cy) {
 				var parentEl = cx;
 				var cx = parentEl.x + parentEl.w/2;
@@ -64,6 +81,7 @@ function init_fx() {
 				});
 
 			this.radius = d;
+			this.skipFlicker = bSkipFlicker;
 			this.intensity = intensity || 1;
 			return this;
 		},
@@ -72,7 +90,7 @@ function init_fx() {
 			var flicker = Math.random();
 			//d = d - d/3 + flicker*2*d/3;
 			var flicker = this.intensity;
-			if (true) {//flicker != 1) {
+			if (!this.skipFlicker) {
 				flicker = Math.min(1, this.intensity - this.intensity/4 + Math.random()*2*this.intensity/4);
 			}
 			var litObjs = this.hit('LitObject');

@@ -53,7 +53,7 @@ function init_Player() {
 			this.health = this.maxHealth = GAME.CHARLEVELS[this.playerType][0].health;
 			this.maxMana = GAME.CHARLEVELS[this.playerType][0].mana;
 
-			var lightSource = Crafty.e('LightSource').LightSource(this.x + TILE_WIDTH/2, this.y + TILE_HEIGHT/2, 12*TILE_WIDTH);
+			var lightSource = Crafty.e('LightSource').LightSource(this.x + TILE_WIDTH/2, this.y + TILE_HEIGHT/2, 12*TILE_WIDTH, 1, true);
 			this.attach(lightSource);
 
 			this.playerControls = controls;
@@ -108,6 +108,11 @@ function init_Player() {
 					else if (treasure.has('Ichor')) {
 						g_game.ichorAmount = Math.min(100, g_game.ichorAmount + treasure.treasureAmt);
 						treasure.destroy();
+						g_game.sounds.pickup.play();
+						Crafty.e('FloatingText').FloatingText(this.locX, this.locY
+							, treasure.treasureAmt
+							, '#5193FF');
+
 						showIchorAmount();
 					}
 				}
@@ -128,6 +133,7 @@ function init_Player() {
 			var exits = this.hit('exit');
 			if (exits) {
 				g_game.curLevel = Math.min(GAME.DUNGEONLEVELS.length-1, parseInt(g_game.curLevel, 10) + 1);
+				g_game['equipment_' + this.class] = JSON.stringify(this.equipment);
 				Crafty.scene("splash");
 				return
 			}
@@ -141,8 +147,9 @@ function init_Player() {
 		calcStats: function() {
 			var offense = 0;
 			var defense = 0;
+			// casting offense only
 			for (var key in this.equipment) {
-				if (key) {
+				if (key && GAME.EQUIPMENT[key].slot == 0) {
 					offense += GAME.EQUIPMENT[key].offense[this.equipment[key]];
 					defense += GAME.EQUIPMENT[key].defense[this.equipment[key]];
 				}
@@ -244,6 +251,68 @@ function init_Player() {
 		}
 	});
 
+	Crafty.c('Caster', {
+		bCasting: false,
+		bReadyToCast: false,
+
+		Caster: function(x, y, controls) {
+			this.requires('Player, Delay')
+				.bind('KeyDown', function(evt) {
+					if (evt.key == Crafty.keys['1'] && !this.bCasting) {
+						this.bCasting = true;
+						g_game.sounds.lockandload.play();
+						this.spell = 'Fireball';
+
+						this.delay(function() {
+							this.bReadyToCast = true;
+							Crafty.e('FloatingText')
+								.FloatingText(this.locX - 0.5, this.locY, 'Ort Por', '#31A2F2', 50);
+						}, 500);
+					}
+				});
+
+			this.class = 'caster';
+
+			var equip = g_game['equipment_' + this.class];
+			if (equip) {
+				this.equipment = $.parseJSON(equip);
+			}
+			else {
+				this.equipment = {
+					sceptre: 1,
+					book: 1
+				};
+			}
+
+			this.Player(x, y, 'caster', controls);
+			this.$nameText.html('Alistair<br>&nbsp;&nbsp;&nbsp;Van Buren');
+			this.$imgPortrait.addClass('portrait-caster');
+			this.calcStats();
+
+			return this;
+		},
+		performMove: function(movement) {
+			if (this.bReadyToCast) {
+				Crafty.e(this.spell)
+					[this.spell](this.locX, this.locY, movement, this, 'Creature');
+				this.bReadyToCast = this.bCasting = false;
+			}
+			else if (this.bShooting) {
+				// cannot move
+				return;
+			}
+			else {
+				this.moveMob(movement);
+				this.searchForTreasure();
+				this.lookForExit();
+			}
+		},
+		calcDamageTo: function(mob) {
+			return 1;
+		}
+
+	});
+
 	Crafty.c('Gunman', {
 		bShooting: false,
 		bReadyToFire: false,
@@ -251,24 +320,31 @@ function init_Player() {
 		Gunman: function(x, y, controls) {
 			this.requires('Player, Delay')
 				.bind('KeyDown', function(evt) {
-					if (evt.key == Crafty.keys.SPACE && !this.bShooting) {
+					if (evt.key == Crafty.keys['1'] && !this.bShooting) {
 						this.bShooting = true;
-						this.spell = 'Missle';
-						Crafty.e('FloatingText')
-							.FloatingText(this.locX-1, this.locY,	'click', '#31A2F2', 50);
+						g_game.sounds.lockandload.play();
+						this.spell = 'Bullet';
 
 						this.delay(function() {
 							this.bReadyToFire = true;
+							Crafty.e('FloatingText')
+								.FloatingText(this.locX - 0.5, this.locY, 'loaded', '#31A2F2', 16);
 						}, 500);
 					}
 				});
 
-			this.equipment = {
-				pistol: 1,
-				knuckles: 1
-			}
-
 			this.class = 'gunman';
+
+			var equip = g_game['equipment_' + this.class];
+			if (equip) {
+				this.equipment = $.parseJSON(equip);
+			}
+			else {
+				this.equipment = {
+					pistol: 1,
+					knuckles: 1
+				};
+			}
 
 			this.Player(x, y, 'gunman', controls);
 			this.$nameText.html('Pidgeon<br>&nbsp;&nbsp;&nbsp;Jack');
@@ -292,6 +368,9 @@ function init_Player() {
 				this.searchForTreasure();
 				this.lookForExit();
 			}
+		},
+		calcDamageTo: function(mob) {
+			return GAME.EQUIPMENT.knuckles.offense[this.equipment.knuckles];
 		}
 	});
 
@@ -302,12 +381,18 @@ function init_Player() {
 		Peasant: function(x, y, controls) {
 			this.requires('Player, Delay');
 
-			this.equipment = {
-				sceptre: 0,
-				knife: 0
-			}
-
 			this.class = 'peasant';
+
+			var equip = g_game['equipment_' + this.class];
+			if (equip) {
+				this.equipment = $.parseJSON(equip);
+			}
+			else {
+				this.equipment ={
+					pistol: 0,
+					knife: 1
+				};
+			};
 
 			this.Player(x, y, 'peasant', controls);
 			this.$nameText.html('Rebecca<br>&nbsp;&nbsp;&nbsp;Van Buren');
@@ -320,34 +405,9 @@ function init_Player() {
 			this.moveMob(movement);
 			this.searchForTreasure();
 			this.lookForExit();
-		}
-	});
-
-	Crafty.c('Fighter', {
-
-		Fighter: function(x, y, controls) {
-			this.requires('Player');
-
-			this.equipment = {
-				shirt: 0,
-				pants: 0,
-				boots: 0,
-				helm: 0,
-				shield: 0,
-				sword: 0
-			}
-
-			this.class = 'fighter';
-
-			this.Player(x, y, 'fighter', controls);
-			this.calcStats();
-
-			return this;
 		},
-		performMove: function(movement) {
-			this.moveMob(movement);
-			this.searchForTreasure();
-			this.lookForExit();
+		calcDamageTo: function(mob) {
+			return GAME.EQUIPMENT.knife.offense[this.equipment.knife];
 		}
 	});
 

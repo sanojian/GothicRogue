@@ -8,7 +8,7 @@ function init_scenes() {
 			g_game.slashEffects.objArray.push(Crafty.e('SlashEffect').SlashEffect());
 		}
 
-		var w = 48, h = 48;
+		var w = 50, h = 50;
 		g_game.mapTiles = [];
 		for (var x=0;x<w;x++) {
 			g_game.mapTiles[x] = [];
@@ -53,7 +53,7 @@ function init_scenes() {
 		for (var y=0;y<g_game.mapTiles[0].length;y++) {
 			g_game.mapReveal[y] = [];
 			for (var x=0;x<g_game.mapTiles.length;x++) {
-				g_game.mapReveal[y][x] = true;
+				g_game.mapReveal[y][x] = false;
 				var tile = g_game.mapTiles[x][y];
 				if (tile == 2) {
 					var sprite = GAME.DUNGEONLEVELS[g_game.curLevel].graphics.wall;
@@ -145,6 +145,12 @@ function init_scenes() {
 
 
 	Crafty.scene("mansion", function () {
+
+		g_game.equipment_peasant = '';
+		g_game.equipment_gunman = '';
+		g_game.equipment_caster = '';
+
+		g_game.curLevel = 0;
 
 		g_game.mapTiles = [];
 		g_game.mapReveal = [];
@@ -270,125 +276,55 @@ function init_scenes() {
 				portrait_wizard: [138, 168, 108, 108]
 			});
 
-
-			Crafty.sprite(1, './images/equipment_fighter.png', {
-				shirt_0: [0*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				shirt_1: [0*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				shirt_2: [0*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				shirt_3: [0*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				shirt_4: [0*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				pants_0: [1*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				pants_1: [1*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				pants_2: [1*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				pants_3: [1*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				pants_4: [1*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				helm_0: [2*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				helm_1: [2*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				helm_2: [2*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				helm_3: [2*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				helm_4: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				boots_0: [3*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				boots_1: [3*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				boots_2: [3*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				boots_3: [3*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				boots_4: [3*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				shield_0: [4*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				shield_1: [4*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				shield_2: [4*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				shield_3: [4*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				shield_4: [4*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				sword_0: [5*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				sword_1: [5*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				sword_2: [5*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				sword_3: [5*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				sword_4: [5*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
+			Crafty.sprite(TILE_WIDTH, './images/crl_effects_x' + ZOOM + '.png', {
+				skull: [12, 16],
+				bone: [9, 3],
+				smoke: [13, 15],
+				ichorExplode: [4, 1],
+				bullet: [8, 6],
+				arrow: [0, 14],
+				magic_missle: [0, 1],
+				fireball: [0, 1]
 			});
 
-			Crafty.sprite(1, './images/equip_icons_fighter.png', {
-				icon_shirt_0: [0*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_shirt_1: [0*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_shirt_2: [0*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_shirt_3: [0*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_shirt_4: [0*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_pants_0: [1*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_pants_1: [1*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_pants_2: [1*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_pants_3: [1*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_pants_4: [1*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_helm_0: [2*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_helm_1: [2*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_helm_2: [2*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_helm_3: [2*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_helm_4: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_boots_0: [3*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_boots_1: [3*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_boots_2: [3*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_boots_3: [3*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_boots_4: [3*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_shield_0: [4*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_shield_1: [4*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_shield_2: [4*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_shield_3: [4*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_shield_4: [4*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_sword_0: [5*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_sword_1: [5*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_sword_2: [5*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_sword_3: [5*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_sword_4: [5*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
-			});
-
-			Crafty.sprite(1, './images/equipment_wizard.png', {
-				robe_0: [0*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				robe_1: [0*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				robe_2: [0*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				robe_3: [0*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				robe_4: [0*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				hat_0: [1*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				hat_1: [1*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				hat_2: [1*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				hat_3: [1*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				hat_4: [1*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				staff_0: [2*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				staff_1: [2*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				staff_2: [2*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				staff_3: [2*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				staff_4: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
-			});
-
-			Crafty.sprite(1, './images/equip_icons_wizard.png', {
-				icon_robe_0: [0*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_robe_1: [0*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_robe_2: [0*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_robe_3: [0*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_robe_4: [0*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_hat_0: [1*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_hat_1: [1*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_hat_2: [1*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_hat_3: [1*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_hat_4: [1*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_staff_0: [2*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_staff_1: [2*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_staff_2: [2*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_staff_3: [2*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				icon_staff_4: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
-			});
-
-			Crafty.sprite(1, './images/crl_effects_x' + ZOOM + '.png', {
-				skull: [12*TILE_WIDTH, 16*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				bone: [9*TILE_WIDTH, 3*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
+			Crafty.sprite(TILE_WIDTH/2, './images/crl_items_x' + ZOOM + '.gif', {
+				'pistol-1': [21, 3],
+				'pistol-2': [22, 3],
+				'pistol-3': [23, 3],
+				'knife-1': [0, 2],
+				'knife-2': [26, 2],
+				'knife-3': [13, 2],
+				'knuckles-1': [18, 3],
+				'knuckles-2': [19, 3],
+				'knuckles-3': [20, 3],
+				'sceptre-1': [12, 3],
+				'sceptre-2': [12, 3],
+				'sceptre-3': [12, 3],
+				'book-1': [2, 0],
+				'book-2': [3, 0],
+				'book-3': [1, 0]
 			});
 
 			Crafty.sprite(1, './images/crl_chars_x' + ZOOM + '.gif', {
 				fighter: [0*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				wizard: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				gunman: [3*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				peasant: [3*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
+				peasant: [3*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				caster: [4*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
 			});
 
 			Crafty.sprite(1, './images/crl_terrain_x' + ZOOM + '.gif', {
-				wall_brick: [0*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TILE_HEIGHT*1.5 + 3],
-				ceiling_brick: [0*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
-				floor_cracks: [1*TERRAIN_WIDTH, 5*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				wall_stone: [0*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				ceiling_stone: [0*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				floor_brick: [1*TERRAIN_WIDTH, 5*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				wall_cave: [0*TERRAIN_WIDTH, 6*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				ceiling_cave: [0*TERRAIN_WIDTH, 6*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				floor_cave: [1*TERRAIN_WIDTH, 6*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				wall_sandstone: [0*TERRAIN_WIDTH, 5*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				ceiling_sandstone: [0*TERRAIN_WIDTH, 5*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				floor_sandstone: [1*TERRAIN_WIDTH, 5*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				floor_dirt: [18*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+
 				exit_closed: [2*TERRAIN_WIDTH, 9*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
 				exit: [8*TERRAIN_WIDTH, 9*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT]
 
@@ -398,21 +334,25 @@ function init_scenes() {
 				ichor: [4*TILE_WIDTH/2, 0*TILE_HEIGHT/2, TILE_WIDTH/2, TILE_HEIGHT/2]
 			});
 
-			Crafty.sprite(1, './images/crl_mons32_x' + ZOOM + '.gif', {
-				rat: [0*TILE_WIDTH, 8*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				rat_king: [8*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				bat: [7*TILE_WIDTH, 2*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
+			Crafty.sprite(32, './images/crl_mons32_x' + ZOOM + '.gif', {
+				snake: [9, 8],
+				bat_king: [3, 9],
+				bat: [1, 2],
+				skeleton: [9, 0],
+				skeleton_archer: [8, 0],
+				skeleton_magic: [6, 2]
+
 			});
 
 
 			Crafty.sprite(1, './images/oryx_roguelike_16x24.png', {
 				//fighter: [0*TILE_WIDTH, 24*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				//wizard: [12*TILE_WIDTH, 24*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				magic_missle: [0*TILE_WIDTH, 10*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				fireball: [10*TILE_WIDTH, 8*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				arrow: [5*TILE_WIDTH, 9*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				//magic_missle: [0*TILE_WIDTH, 10*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				//fireball: [10*TILE_WIDTH, 8*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				//arrow: [5*TILE_WIDTH, 9*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				sleep: [0*TILE_WIDTH, 8*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				smoke: [3*TILE_WIDTH, 8*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				//smoke: [3*TILE_WIDTH, 8*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				lightening: [3*TILE_WIDTH, 9*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				elec_aoe: [0, 0, 3*TILE_WIDTH, 3*TILE_HEIGHT],
 
@@ -423,13 +363,13 @@ function init_scenes() {
 				//rat: [1*TILE_WIDTH, 26*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				//rat_king: [4*TILE_WIDTH, 26*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				//bat: [6*TILE_WIDTH, 26*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				skeleton: [0*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				//skeleton: [0*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				skeleton_warrior: [1*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				skeleton_mage: [4*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				skeleton_necro: [5*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				skeleton_boss: [2*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				skeleton_archer: [3*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				skeleton_magic: [6*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				//skeleton_archer: [3*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
+				//skeleton_magic: [6*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				imp: [4*TILE_WIDTH, 29*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				death_knight: [11*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
 				death_mage: [16*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
@@ -499,10 +439,19 @@ function init_scenes() {
 			g_game.sounds.fireball = new buzz.sound( "./audio/sfx/fireball", {
 				formats: [ "wav" ]
 			});
+			g_game.sounds.transform = new buzz.sound( "./audio/sfx/transform", {
+				formats: [ "wav" ]
+			});
 			g_game.sounds.lightening = new buzz.sound( "./audio/sfx/lightening", {
 				formats: [ "wav" ]
 			});
 			g_game.sounds.lightening_strike = new buzz.sound( "./audio/sfx/lightening_strike", {
+				formats: [ "wav" ]
+			});
+			g_game.sounds.lockandload = new buzz.sound( "./audio/sfx/lockandload", {
+				formats: [ "wav" ]
+			});
+			g_game.sounds.gunshot = new buzz.sound( "./audio/sfx/gunshot", {
 				formats: [ "wav" ]
 			});
 			g_game.sounds.arrow = new buzz.sound( "./audio/sfx/arrow", {
@@ -513,8 +462,8 @@ function init_scenes() {
 			});
 
 			//Crafty.scene("intro");
-			//Crafty.scene("main");
-			loadMap('mansion');
+			Crafty.scene("main");
+			//loadMap('mansion');
 
 		});
 	});
@@ -598,7 +547,7 @@ function init_scenes() {
 		$('#divGUI').hide();
 		Crafty.background("#000");
 
-		g_game.curLevel = localStorage.curLevel || 0;
+		g_game.curLevel = g_game.curLevel || 0;
 
 		Crafty.viewport.x = 0;
 		Crafty.viewport.y = 0;

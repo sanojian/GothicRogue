@@ -1,65 +1,30 @@
 window.GAME = {
 	EQUIPMENT: {
-		shirt: {
-			classes: ['fighter'],
-			defense: [3, 6, 12, 24, 48],
-			offense: [0, 0, 0, 0, 0],
-			slot: 0,
-			z: 110
-		},
-		pants: {
-			classes: ['fighter'],
-			defense: [1, 2, 4, 8, 16],
-			offense: [0, 0, 0, 0, 0],
-			slot: 1,
-			z: 110
-		},
-		helm: {
-			classes: ['fighter'],
-			defense: [1, 2, 4, 8, 16],
-			offense: [0, 0, 0, 0, 0],
-			slot: 2,
-			z: 110
-		},
-		boots: {
-			classes: ['fighter'],
-			defense: [1, 2, 4, 8, 16],
-			offense: [0, 0, 0, 0, 0],
-			slot: 3,
-			z: 110
-		},
-		shield: {
-			classes: ['fighter'],
-			defense: [4, 8, 16, 32, 64],
-			offense: [0, 0, 0, 0, 0],
-			slot: 4,
-			z: 110
-		},
-		sword: {
-			classes: ['fighter'],
-			defense: [0, 0, 0, 0, 0],
-			offense: [6, 12, 18, 30, 48],
-			slot: 5,
-			z: 90
-		},
 		knife: {
 			classes: ['peasant'],
 			defense: [0, 0, 0, 0, 0],
-			offense: [0, 1, 2, 5, 8],
+			offense: [0, 1, 2, 3, 8],
 			slot: 1,
 			z: 110
 		},
 		sceptre: {
-			classes: ['peasant'],
+			classes: ['caster'],
 			defense: [0, 0, 0, 0, 0],
-			offense: [0, 0, 0, 0, 0],
+			offense: [0, 1, 2, 3, 0],
 			slot: 0,
 			z: 110
 		},
-		pistol: {
-			classes: ['gunman'],
+		book: {
+			classes: ['caster'],
 			defense: [0, 0, 0, 0, 0],
-			offense: [1, 2, 3, 5, 8],
+			offense: [0, 0, 0, 0, 0],
+			slot: 1,
+			z: 110
+		},
+		pistol: {
+			classes: ['peasant', 'gunman'],
+			defense: [0, 0, 0, 0, 0],
+			offense: [0, 1, 2, 3, 8],
 			slot: 0,
 			z: 110
 		},
@@ -69,42 +34,21 @@ window.GAME = {
 			offense: [0, 1, 2, 5, 8],
 			slot: 1,
 			z: 110
-		},
-		robe: {
-			classes: ['wizard'],
-			defense: [2, 3, 5, 8, 12],
-			offense: [0, 2, 4, 6, 8],
-			slot: 0,
-			z: 110
-		},
-		hat: {
-			classes: ['wizard'],
-			defense: [1, 2, 3, 4, 5],
-			offense: [0, 1, 2, 3, 4],
-			slot: 1,
-			z: 110
-		},
-		staff: {
-			classes: ['wizard'],
-			defense: [0, 0, 0, 0, 0],
-			offense: [1, 4, 8, 14, 18],
-			slot: 2,
-			z: 110
 		}
 	},
 	SPELLS: {
 		Missle: {
 			mana: 4,
-			damage: 5,
+			damage: 2,
 			speed: 5,
 			range: 200,
 			sound: 'missle'
 		},
 		Fireball: {
 			mana: 8,
-			damage: 3,
-			speed: 4,
-			range: 200,
+			damage: 2,
+			speed: 8,
+			range: 300,
 			sound: 'fireball'
 		},
 		Sleep: {
@@ -124,15 +68,22 @@ window.GAME = {
 		},
 		Arrow: {
 			mana: 4,
-			damage: 2,
+			damage: 1,
 			speed: 1,
 			range: 180,
 			sound: 'arrow'
+		},
+		Bullet: {
+			mana: 4,
+			damage: 2,
+			speed: 12,
+			range: 180,
+			sound: 'gunshot'
 		}
 	},
 	CHARLEVELS: {
-		fighter: [
-			{ health: 10, mana: 0 },
+		caster: [
+			{ health: 6, mana: 0 },
 			{ health: 12, mana: 0 },
 			{ health: 14, mana: 0 },
 			{ health: 26, mana: 0 },
@@ -142,18 +93,6 @@ window.GAME = {
 			{ health: 50, mana: 0 },
 			{ health: 55, mana: 0 },
 			{ health: 60, mana: 0 }
-		],
-		wizard: [
-			{ health: 8, mana: 7 },
-			{ health: 9, mana: 12 },
-			{ health: 12, mana: 16 },
-			{ health: 15, mana: 19 },
-			{ health: 19, mana: 25 },
-			{ health: 22, mana: 28 },
-			{ health: 25, mana: 32 },
-			{ health: 28, mana: 36 },
-			{ health: 31, mana: 40 },
-			{ health: 35, mana: 43 }
 		],
 		gunman: [
 			{ health: 6, mana: 0 },
@@ -183,16 +122,16 @@ window.GAME = {
 	DUNGEONLEVELS: [
 		{
 			name: 'The Entryway',
-			spawnRate: 0.05,
+			spawnRate: 0.07,
 			mobs: [ 
-				{ sprite: 'rat_king', 	prob: 1,	type: 'fighter', 	level: 2, 	health: 10,	 	mana: 0, 	offense: 2, 	defense: 12		},
-				{ sprite: 'rat', 		prob: 5,	type: 'fighter', 	level: 1, 	health: 2, 	mana: 0, 	offense: 1, 	defense: 4 		},
+				{ sprite: 'bat_king', 	prob: 1,	type: 'fighter', 	level: 2, 	health: 8,	 	mana: 0, 	offense: 2, 	defense: 12		},
+				{ sprite: 'snake', 		prob: 5,	type: 'fighter', 	level: 1, 	health: 2, 	mana: 0, 	offense: 1, 	defense: 4 		},
 				{ sprite: 'bat', 		prob: 4,	type: 'fighter', 	level: 1, 	health: 2, 	mana: 0, 	offense: 1, 	defense: 4		}
 			],
 			graphics: {
-				wall: 'wall_brick',
-				ceiling: 'ceiling_brick',
-				floor: 'floor_cracks'
+				wall: 'wall_cave',
+				ceiling: 'ceiling_cave',
+				floor: 'floor_dirt'
 			},
 			song: 'DST-TheHauntedChapel',
 			sceneInfo: {
@@ -207,16 +146,16 @@ window.GAME = {
 		},
 		{
 			name: 'The Skeleton Maze',
-			spawnRate: 0.05,
+			spawnRate: 0.07,
 			mobs: [ 
-				{ sprite: 'skeleton_magic',		prob: 1,	type: 'caster', 	level: 3, 	health: 24, 	mana: 4, 	offense: 2, 	defense: 12,	spell: 'Missle'	},
-				{ sprite: 'skeleton', 			prob: 6,	type: 'fighter', 	level: 2, 	health: 14,	 	mana: 0, 	offense: 8, 	defense: 8		},
-				{ sprite: 'skeleton_archer', 	prob: 3,	type: 'caster', 	level: 2, 	health: 11,	 	mana: 4, 	offense: 2, 	defense: 8,		spell: 'Arrow' }
+				{ sprite: 'skeleton_magic',		prob: 1,	type: 'caster', 	level: 3, 	health: 12, 	mana: 4, 	offense: 1, 	defense: 12,	spell: 'Missle'	},
+				{ sprite: 'skeleton', 			prob: 6,	type: 'fighter', 	level: 2, 	health: 3,	 	mana: 0, 	offense: 1, 	defense: 8		},
+				{ sprite: 'skeleton_archer', 	prob: 3,	type: 'caster', 	level: 2, 	health: 2,	 	mana: 4, 	offense: 1, 	defense: 8,		spell: 'Arrow' }
 			],
 			graphics: {
-				wall: 'wall_mud',
-				ceiling: 'ceiling_mud',
-				floor: 'floor_cracks'
+				wall: 'wall_sandstone',
+				ceiling: 'ceiling_sandstone',
+				floor: 'floor_sandstone'
 			},
 			song: 'DST-ClockTower',
 			sceneInfo: {
@@ -234,7 +173,7 @@ window.GAME = {
 		},
 		{
 			name: 'The Orc Kingdom',
-			spawnRate: 0.05,
+			spawnRate: 0.07,
 			mobs: [ 
 				{ sprite: 'orc_chief', 	prob: 1,	type: 'fighter', 	level: 4, 	health: 26,	 	mana: 0, 	offense: 22, 	defense: 18		},
 				{ sprite: 'orc', 		prob: 6,	type: 'fighter', 	level: 3, 	health: 14, 	mana: 0, 	offense: 22, 	defense: 18 	},
@@ -261,7 +200,7 @@ window.GAME = {
 		},
 		{
 			name: 'Revenge of the Arch Mage',
-			spawnRate: 0.05,
+			spawnRate: 0.07,
 			mobs: [ 
 				{ sprite: 'skeleton_boss', 		prob: 1,	type: 'fighter', 	level: 5, 	health: 32,	 	mana: 0, 	offense: 32, 	defense: 32		},
 				{ sprite: 'skeleton_warrior', 	prob: 4,	type: 'fighter', 	level: 4, 	health: 26,	 	mana: 0, 	offense: 26, 	defense: 18		},
@@ -286,7 +225,7 @@ window.GAME = {
 		},
 		{
 			name: 'Realm of the Necromancer',
-			spawnRate: 0.05,
+			spawnRate: 0.07,
 			mobs: [ 
 				{ sprite: 'necromancer',	prob: 1,	type: 'caster', 	level: 5, 	health: 26,	 	mana: 24, 	offense: 22, 	defense: 18,	spell: 'Fireball'	},
 				{ sprite: 'death_knight', 	prob: 4,	type: 'fighter', 	level: 5, 	health: 26,	 	mana: 0, 	offense: 22, 	defense: 18		},

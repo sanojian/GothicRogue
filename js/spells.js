@@ -26,7 +26,7 @@ function init_Spells() {
 					else if (this.hit(target)) {
 						var creatures = this.hit(target);
 						for (var i=0;i<creatures.length;i++) {
-							var xp = creatures[i].obj.takeDamage(this.damage, this.caster);
+							var xp = creatures[i].obj.takeDamage(this.damage*this.caster.offense, this.caster);
 						}
 						this.destroy();
 					}
@@ -34,14 +34,56 @@ function init_Spells() {
 
 			this.caster = caster;
 			this.damage = this.calcSpellDamage(GAME.SPELLS.Arrow, caster);
-			if (direction.x > 0) {
-				this.sprite(8*TILE_WIDTH, 9*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+			if (direction.y < 0) {
+				this.sprite(3, 14);
 			}
 			else if (direction.x < 0) {
-				this.sprite(7*TILE_WIDTH, 9*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+				this.sprite(2, 14);
 			}
 			else if (direction.y > 0) {
-				this.sprite(6*TILE_WIDTH, 9*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+				this.sprite(1, 14);
+			}
+
+			return this;
+		}
+	});
+
+	Crafty.c('Bullet', {
+		speed: GAME.SPELLS.Bullet.speed*ZOOM,
+		range: GAME.SPELLS.Bullet.range*ZOOM,
+
+		Bullet: function(x, y, direction, caster, target) {
+			this.requires('2D, ' + RENDERING_MODE + ', Collision, Spell, bullet')
+				.attr({ x: x*TILE_WIDTH, y: y*TILE_HEIGHT, z: 100})
+				.bind('EnterFrame', function(frameObj) {
+					this.attr({ x: this.x + direction.x*this.speed, y: this.y + direction.y*this.speed });
+					this.range -= this.speed;
+					if (this.range <= 0) {
+						this.destroy();
+					}
+					else if (this.hit('solid')) {
+						this.destroy();
+					}
+					else if (this.hit(target)) {
+						var creatures = this.hit(target);
+						for (var i=0;i<creatures.length;i++) {
+							var xp = creatures[i].obj.takeDamage(this.damage*this.caster.offense, this.caster);
+						}
+						this.destroy();
+					}
+				}).collision()
+
+			this.caster = caster;
+			this.damage = this.calcSpellDamage(GAME.SPELLS.Bullet, caster);
+			g_game.sounds[GAME.SPELLS.Bullet.sound].play();
+			if (direction.y > 0) {
+				this.sprite(11, 6);
+			}
+			else if (direction.x < 0) {
+				this.sprite(10, 6);
+			}
+			else if (direction.y < 0) {
+				this.sprite(9, 6);
 			}
 
 			return this;
@@ -232,7 +274,7 @@ function init_Spells() {
 					else if (this.hit(target)) {
 						var creatures = this.hit(target);
 						for (var i=0;i<creatures.length;i++) {
-							var xp = creatures[i].obj.takeDamage(this.damage, this.caster);
+							var xp = creatures[i].obj.takeDamage(this.damage*this.caster.offense, this.caster);
 						}
 						g_game.sounds.missle_hit.play();
 						this.destroy();
@@ -251,13 +293,13 @@ function init_Spells() {
 	});
 
 	Crafty.c('Fireball', {
-		speed: GAME.SPELLS.Fireball.speed*3,
-		range: GAME.SPELLS.Fireball.range*3,
+		speed: GAME.SPELLS.Fireball.speed*ZOOM,
+		range: GAME.SPELLS.Fireball.range*ZOOM,
 
 		Fireball: function(x, y, direction, caster, target) {
 			this.requires('2D, ' + RENDERING_MODE + ', Collision, fireball, Spell, SpriteAnimation')
 				.attr({ x: x*TILE_WIDTH, y: y*TILE_HEIGHT, z: 100})
-				.animate('burn', [[10*TILE_WIDTH, 8*TILE_HEIGHT], [11*TILE_WIDTH, 8*TILE_HEIGHT]])
+				.animate('burn', 0, 1, 1)
 				.bind('EnterFrame', function(frameObj) {
 					this.attr({ x: this.x + direction.x*this.speed, y: this.y + direction.y*this.speed });
 					this.range -= this.speed;
@@ -270,7 +312,7 @@ function init_Spells() {
 					else if ((frameObj.frame % 4 == 0) && this.hit(target)) {
 						var creatures = this.hit(target);
 						for (var i=0;i<creatures.length;i++) {
-							creatures[i].obj.takeDamage(this.damage, this.caster);
+							creatures[i].obj.takeDamage(this.damage*this.caster.offense, this.caster);
 						}
 					}
 				}).collision()

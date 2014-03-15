@@ -2,7 +2,7 @@ function init_world() {
 
 	Crafty.c('Treasure', {
 		Treasure: function(type, level, x, y) {
-			this.requires('2D, ' + RENDERING_MODE + ', Collision, LitObject, loot, icon_' + type + '_' + level)
+			this.requires('2D, ' + RENDERING_MODE + ', Collision, LitObject, loot, ' + type + '-' + level)
 				.attr({ z: 90 });
 			if (x !== undefined) {
 				this.attr({ x: x * TILE_WIDTH, y: y * TILE_HEIGHT });
@@ -28,7 +28,7 @@ function init_world() {
 			this.treasureType = 'ichor';
 			this.treasureAmt = amt;
 
-			var lightSource = Crafty.e('LightSource').LightSource(this.x + this.w/2, this.y + this.h/2, 3*TILE_WIDTH, 0.7);
+			var lightSource = Crafty.e('LightSource').LightSource(this.x + this.w/2, this.y + this.h/2, 3*TILE_WIDTH, 0.7, true);
 			this.attach(lightSource);
 
 			return this;

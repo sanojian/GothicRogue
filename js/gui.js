@@ -78,10 +78,21 @@ function showIchorAmount() {
 	if (g_game.persona == 0 && g_game.ichorAmount >= 50) {
 		var xTile = g_game.wizard.x / TILE_WIDTH;
 		var yTile = g_game.wizard.y / TILE_HEIGHT;
+		Crafty.e('IchorExplode').IchorExplode(g_game.wizard.x, g_game.wizard.y);
 		g_game.wizard.destroy();
 		g_game.wizard = Crafty.e('Gunman')
 			.Gunman(xTile, yTile, g_game.wizardControls);
-		g_game.ichorAmount = 0
+		g_game.persona = 1;
+		//g_game.ichorAmount = 0
+	}
+	else if (g_game.persona == 1 && g_game.ichorAmount >= 90) {
+		var xTile = g_game.wizard.x / TILE_WIDTH;
+		var yTile = g_game.wizard.y / TILE_HEIGHT;
+		Crafty.e('IchorExplode').IchorExplode(g_game.wizard.x, g_game.wizard.y);
+		g_game.wizard.destroy();
+		g_game.wizard = Crafty.e('Caster')
+			.Caster(xTile, yTile, g_game.wizardControls);
+		g_game.persona = 2;
 	}
 
 	var maxHeight = 153;

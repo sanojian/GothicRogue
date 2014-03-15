@@ -69,17 +69,17 @@ function init_Mob() {
 				from.addXP(getXPforLevel(this.level));
 				// loot
 				if (Math.random() < 0.2) {
-					var item = Math.floor(Math.random() * 9);
+					var item = Math.floor(Math.random() * 4);
 					var i = 0;
 					for (var key in GAME.EQUIPMENT) {
 						if (i == item) {
-							Crafty.e('Treasure').Treasure(key, this.level, this.locX, this.locY);
+							Crafty.e('Treasure').Treasure(key, this.level, this.locX + 0.25, this.locY + 0.4);
 						}
 						i++;
 					}
 				}
 				else {
-					Crafty.e('Ichor').Ichor(this.locX, this.locY, 'ichor', 20);
+					Crafty.e('Ichor').Ichor(this.locX, this.locY, 'ichor', 50);
 				}
 
 				// flying bones
@@ -101,13 +101,6 @@ function init_Mob() {
 
 				this.doDestroy();
 			}
-		},
-		calcDamageTo: function(mob) {
-			/*var dmg = 1 + Math.floor(Math.random() * this.offense);
-			var reduction = Math.random()*mob.defense/(30 * mob.level);
-			dmg = Math.floor(dmg - dmg*reduction);
-			return Math.max(1, dmg);*/
-			return this.offense;
 		},
 		sleep: function() {
 			this.sleeping = true;
@@ -157,10 +150,15 @@ function init_Mob() {
 								var dist = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 								if (props.type == 'caster' && this.mana >= GAME.SPELLS[props.spell].mana && (dist <= Math.abs(dx) || dist <= Math.abs(dy))) {
 									// cast spell
-									Crafty.e(props.spell)
-										[props.spell](this.locX, this.locY, movement, this, 'Player');
-									this.mana -= GAME.SPELLS[props.spell].mana;
-									g_game.sounds[GAME.SPELLS[props.spell].sound].play();
+									Crafty.e('FloatingText')
+										.FloatingText(this.locX - 0.5, this.locY, 'Grav Ex', '#500000', 50);
+									this.delay(function() {
+										Crafty.e(props.spell)
+											[props.spell](this.locX, this.locY, movement, this, 'Player');
+										this.mana -= GAME.SPELLS[props.spell].mana;
+										g_game.sounds[GAME.SPELLS[props.spell].sound].play();
+									}, 500);
+
 								}
 								else {
 									this.moveMob(movement);
@@ -193,6 +191,9 @@ function init_Mob() {
 				g_game.exit.removeComponent('exit_closed').addComponent('exit');
 			}
 			this.destroy();
+		},
+		calcDamageTo: function(mob) {
+			return this.offense;
 		}
 	});
 
