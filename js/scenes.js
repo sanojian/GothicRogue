@@ -88,8 +88,18 @@ function init_scenes() {
 			for (var x=0;x<g_game.mapTiles.length;x++) {
 				if (g_game.mapTiles[x][y] == 1) {
 					if (!bPlayerPlaced) {
-						g_game.wizard = Crafty.e('Peasant')
-							.Peasant(x, y, g_game.wizardControls);
+						if (g_game.persona == 1) {
+							g_game.wizard = Crafty.e('Gunman')
+								.Gunman(x, y, g_game.wizardControls);
+						}
+						else if (g_game.persona == 2) {
+							g_game.wizard = Crafty.e('Caster')
+								.Caster(x, y, g_game.wizardControls);
+						}
+						else {
+							g_game.wizard = Crafty.e('Peasant')
+								.Peasant(x, y, g_game.wizardControls);
+						}
 						bPlayerPlaced = true;
 					}
 				}
@@ -108,7 +118,7 @@ function init_scenes() {
 						var rand = Math.random() * 10;
 						var bMobPlaced = false;
 						var chanceTotal = 0;
-						for (var i=0;!bMobPlaced && i<dungeonLevel.mobs.length;i++) {
+						for (var i=1;!bMobPlaced && i<dungeonLevel.mobs.length;i++) {
 							var mob = dungeonLevel.mobs[i];
 							if (rand < mob.prob + chanceTotal) {
 								if (!bExitPlaced) {
@@ -119,13 +129,15 @@ function init_scenes() {
 									bExitPlaced = true;
 									bMobPlaced = true;
 								}
-								else if (!(i==0 && bBossPlaced)) {
+								else if(!bBossPlaced) {
+									var placedMob = Crafty.e('Creature').Creature(x, y, dungeonLevel.mobs[0]);
+									placedMob.iAmBoss = true;
+									bMobPlaced = true;
+									bBossPlaced = true;
+								}
+								else {
 									var placedMob = Crafty.e('Creature').Creature(x, y, mob);
 									bMobPlaced = true;
-									if (i==0) {
-										bBossPlaced = true;
-										placedMob.iAmBoss = true;
-									}
 								}
 							}
 							chanceTotal += mob.prob;
@@ -150,7 +162,7 @@ function init_scenes() {
 		g_game.equipment_gunman = '';
 		g_game.equipment_caster = '';
 
-		g_game.curLevel = 0;
+		g_game.curLevel = -1;
 
 		g_game.mapTiles = [];
 		g_game.mapReveal = [];
@@ -280,11 +292,14 @@ function init_scenes() {
 				skull: [12, 16],
 				bone: [9, 3],
 				smoke: [13, 15],
+				fire: [15, 14],
+				lightening: [9, 14],
 				ichorExplode: [4, 1],
 				bullet: [8, 6],
 				arrow: [0, 14],
 				magic_missle: [0, 1],
-				fireball: [0, 1]
+				fireball: [0, 1],
+				sleep: [12, 15]
 			});
 
 			Crafty.sprite(TILE_WIDTH/2, './images/crl_items_x' + ZOOM + '.gif', {
@@ -297,20 +312,27 @@ function init_scenes() {
 				'knuckles-1': [18, 3],
 				'knuckles-2': [19, 3],
 				'knuckles-3': [20, 3],
-				'sceptre-1': [12, 3],
-				'sceptre-2': [12, 3],
+				'sceptre-1': [13, 3],
+				'sceptre-2': [16, 3],
 				'sceptre-3': [12, 3],
-				'book-1': [2, 0],
-				'book-2': [3, 0],
-				'book-3': [1, 0]
+				'book-1': [7, 1],
+				'book-2': [6, 1],
+				'book-3': [8, 1],
+				ichor: [4, 0],
+				potion: [23, 0]
 			});
 
-			Crafty.sprite(1, './images/crl_chars_x' + ZOOM + '.gif', {
-				fighter: [0*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				wizard: [2*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				gunman: [3*TILE_WIDTH, 4*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				peasant: [3*TILE_WIDTH, 1*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				caster: [4*TILE_WIDTH, 0*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
+			Crafty.sprite(TILE_WIDTH, './images/crl_chars_x' + ZOOM + '.gif', {
+				fighter: [0, 0],
+				wizard: [2, 4],
+				gunman: [3, 4],
+				peasant: [3, 1],
+				caster: [0, 1],
+
+				neophyte: [5, 3],
+				enforcer: [2, 5],
+				priest: [4, 3],
+				demon: [4, 5]
 			});
 
 			Crafty.sprite(1, './images/crl_terrain_x' + ZOOM + '.gif', {
@@ -324,69 +346,32 @@ function init_scenes() {
 				ceiling_sandstone: [0*TERRAIN_WIDTH, 5*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
 				floor_sandstone: [1*TERRAIN_WIDTH, 5*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
 				floor_dirt: [18*TERRAIN_WIDTH, 0*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				wall_muck: [0*TERRAIN_WIDTH, 3*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				ceiling_muck: [0*TERRAIN_WIDTH, 3*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
+				floor_muck: [1*TERRAIN_WIDTH, 3*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
 
 				exit_closed: [2*TERRAIN_WIDTH, 9*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT],
 				exit: [8*TERRAIN_WIDTH, 9*TERRAIN_HEIGHT, TERRAIN_WIDTH, TERRAIN_HEIGHT]
 
 			});
 
-			Crafty.sprite(1, './images/crl_items_x' + ZOOM + '.gif', {
-				ichor: [4*TILE_WIDTH/2, 0*TILE_HEIGHT/2, TILE_WIDTH/2, TILE_HEIGHT/2]
-			});
-
 			Crafty.sprite(32, './images/crl_mons32_x' + ZOOM + '.gif', {
 				snake: [9, 8],
-				bat_king: [3, 9],
+				bat_king: [2, 9],
 				bat: [1, 2],
 				skeleton: [9, 0],
 				skeleton_archer: [8, 0],
-				skeleton_magic: [6, 2]
-
+				skeleton_magic: [6, 2],
+				zombie: [5, 1],
+				headless: [1, 7],
+				skeleton_warrior: [3, 2],
+				skeleton_shooter: [5, 0],
+				witch: [2, 3]
 			});
 
-
-			Crafty.sprite(1, './images/oryx_roguelike_16x24.png', {
-				//fighter: [0*TILE_WIDTH, 24*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//wizard: [12*TILE_WIDTH, 24*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//magic_missle: [0*TILE_WIDTH, 10*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//fireball: [10*TILE_WIDTH, 8*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//arrow: [5*TILE_WIDTH, 9*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				sleep: [0*TILE_WIDTH, 8*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//smoke: [3*TILE_WIDTH, 8*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				lightening: [3*TILE_WIDTH, 9*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				elec_aoe: [0, 0, 3*TILE_WIDTH, 3*TILE_HEIGHT],
-
-				orc: [5*TILE_WIDTH, 29*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				orc_archer: [6*TILE_WIDTH, 29*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				orc_chief: [8*TILE_WIDTH, 29*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				spider: [8*TILE_WIDTH, 27*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//rat: [1*TILE_WIDTH, 26*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//rat_king: [4*TILE_WIDTH, 26*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//bat: [6*TILE_WIDTH, 26*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//skeleton: [0*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				skeleton_warrior: [1*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				skeleton_mage: [4*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				skeleton_necro: [5*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				skeleton_boss: [2*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//skeleton_archer: [3*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//skeleton_magic: [6*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				imp: [4*TILE_WIDTH, 29*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				death_knight: [11*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				death_mage: [16*TILE_WIDTH, 30*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				necromancer: [2*TILE_WIDTH, 32*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-
-				//skull: [214*3, 848*3, 12*3, 12*3],
-				//bone: [256*3, 1020*3, 8*3, 8*3],
-
-				//wall_brick: [0*TILE_WIDTH, 13*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//ceiling_brick: [7*TILE_WIDTH, 12*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//floor_cracks: [9*TILE_WIDTH, 15*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				wall_mud: [2*TILE_WIDTH, 13*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				ceiling_mud: [13*TILE_WIDTH, 12*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				floor_mouldy: [9*TILE_WIDTH, 12*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				entrance: [8*TILE_WIDTH, 14*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
-				//exit_closed: [7*TILE_WIDTH, 16*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT],
-				//exit: [14*TILE_WIDTH, 16*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT]
+			Crafty.sprite(48, './images/crl_mons48_x' + ZOOM + '.gif', {
+				king_mummy: [1, 4],
+				skeleton_boss: [6, 0]
 			});
 
 			Crafty.sprite(1, './images/oryx_roguelike_b_graveyard.png', {
@@ -462,8 +447,9 @@ function init_scenes() {
 			});
 
 			//Crafty.scene("intro");
-			Crafty.scene("main");
-			//loadMap('mansion');
+			//Crafty.scene("main");
+			//Crafty.scene("splash");
+			loadMap('mansion');
 
 		});
 	});
@@ -479,7 +465,7 @@ function init_scenes() {
 			.attr({ x: VIEW_WIDTH/2 - 240/2, y: VIEW_HEIGHT/3 - 120/2, z: 1 })
 
 
-		Crafty.e('2D, ' + RENDERING_MODE + ', Text').attr({ w: VIEW_WIDTH, x: 0, y: 96, z: 1000 })
+		Crafty.e('2D, ' + RENDERING_MODE + ', Text').attr({ w: VIEW_WIDTH, x: 0, y: 32, z: 1000 })
 			.text('Death')
 			.textColor('#9D9D9D', 1)
 			.textFont({ size: "24pt", weight: 'bold', family: GAME_FONT })
@@ -493,55 +479,13 @@ function init_scenes() {
 			.css({ 'text-align': 'center'})
 			.bind('KeyDown', function(evt) {
 				if (evt.key == Crafty.keys.SPACE) {
-					Crafty.scene("splash");
+					Crafty.scene("mansion");
 				}
 			})
 
 
 	});
 
-	Crafty.scene("intro", function () {
-		$('#divGUI').hide();
-		Crafty.background("#000");
-
-		Crafty.viewport.x = 0;
-		Crafty.viewport.y = 0;
-
-		Crafty.e('2D, ' + RENDERING_MODE + ', ' + GAME.DUNGEONLEVELS[g_game.curLevel].sceneInfo.pic1)
-			.attr({ x: VIEW_WIDTH/2 - 240/2, y: VIEW_HEIGHT/3 - 120/2, z: 1 })
-
-		Crafty.e('2D, ' + RENDERING_MODE + ', ' + GAME.DUNGEONLEVELS[g_game.curLevel].sceneInfo.pic2)
-			.attr({ x: VIEW_WIDTH/2 - 2*240 + 60, y: VIEW_HEIGHT/3, z: 1 })
-
-		Crafty.e('2D, ' + RENDERING_MODE + ', ' + GAME.DUNGEONLEVELS[g_game.curLevel].sceneInfo.pic3)
-			.attr({ x: VIEW_WIDTH/2 + 240 - 60, y: VIEW_HEIGHT/3, z: 1 })
-
-		var speakers = {};
-		speakers.fighter = Crafty.e('2D, ' + RENDERING_MODE + ', portrait_fighter')
-			.attr({ x: VIEW_WIDTH/2 + 108/2, y: VIEW_HEIGHT/2, z: 10 })
-		speakers.wizard = Crafty.e('2D, ' + RENDERING_MODE + ', portrait_wizard')
-			.attr({ x: VIEW_WIDTH/2 - 3*108/2, y: VIEW_HEIGHT/2, z: 10 })
-
-		Crafty.e('2D, ' + RENDERING_MODE + ', Text').attr({ w: VIEW_WIDTH, x: 0, y: 64, z: 1000 })
-			.text("Mystery of the Unearthly Ichor")
-			.textColor('#9D9D9D', 1)
-			.textFont({ size: "32pt", weight: 'bold', family: GAME_FONT })
-			.css({ 'text-align': 'center'})
-
-		Crafty.e('2D, ' + RENDERING_MODE + ', Text, Keyboard').attr({ w: VIEW_WIDTH, x: 0, y: VIEW_HEIGHT-160, z: 1000 })
-			.text("Type space to continue...")
-			.textColor('#9D9D9D', 1)
-			.textFont({ size: "16pt", weight: 'bold', family: GAME_FONT })
-			.css({ 'text-align': 'center'})
-			.bind('KeyDown', function(evt) {
-				if (evt.key == Crafty.keys.SPACE) {
-					Crafty.scene("splash");
-				}
-			})
-
-		playSong('DST-TheHauntedChapel');
-
-	});
 
 	Crafty.scene("splash", function () {
 		$('#divGUI').hide();
@@ -556,24 +500,36 @@ function init_scenes() {
 			.attr({ x: VIEW_WIDTH/2 - 240/2, y: VIEW_HEIGHT/3 - 120/2, z: 1 })
 
 		Crafty.e('2D, ' + RENDERING_MODE + ', ' + GAME.DUNGEONLEVELS[g_game.curLevel].sceneInfo.pic2)
-			.attr({ x: VIEW_WIDTH/2 - 2*240 + 60, y: VIEW_HEIGHT/3, z: 1 })
+			.attr({ x: VIEW_WIDTH/2 - 2*240 + 90, y: VIEW_HEIGHT/3, z: 1 })
 
 		Crafty.e('2D, ' + RENDERING_MODE + ', ' + GAME.DUNGEONLEVELS[g_game.curLevel].sceneInfo.pic3)
-			.attr({ x: VIEW_WIDTH/2 + 240 - 60, y: VIEW_HEIGHT/3, z: 1 })
+			.attr({ x: VIEW_WIDTH/2 + 240 - 90, y: VIEW_HEIGHT/3, z: 1 })
 
-		var speakers = {};
-		speakers.fighter = Crafty.e('2D, ' + RENDERING_MODE + ', portrait_fighter')
-			.attr({ x: VIEW_WIDTH/2 + 108/2, y: VIEW_HEIGHT/2, z: 10 })
-		speakers.wizard = Crafty.e('2D, ' + RENDERING_MODE + ', portrait_wizard')
-			.attr({ x: VIEW_WIDTH/2 - 3*108/2, y: VIEW_HEIGHT/2, z: 10 })
+		// example mob
+		Crafty.e('2D, ' + RENDERING_MODE + ', ' + GAME.DUNGEONLEVELS[g_game.curLevel].mobs[1].sprite)
+			.attr({ x: VIEW_WIDTH/2 + 60, y: VIEW_HEIGHT/2, z: 100 })
 
-		Crafty.e('2D, ' + RENDERING_MODE + ', Text').attr({ w: VIEW_WIDTH, x: 0, y: 64, z: 1000 })
+		var speaking = 'peasant';
+		if (g_game.curLevel == GAME.DUNGEONLEVELS.length-1) {
+			speaking = 'peasant';
+		}
+		else if (g_game.persona == 1) {
+			speaking = 'gunman';
+		}
+		else if (g_game.persona == 2) {
+			speaking = 'caster';
+		}
+		var speaker = Crafty.e('2D, ' + RENDERING_MODE + ', Color, charPortrait, portrait-' + speaking)
+			.attr({ x: VIEW_WIDTH/2 - 60, y: 2*VIEW_HEIGHT/3, w: 82, h: 86, z: 100 })
+			//.color('#ffffff');
+
+		Crafty.e('2D, ' + RENDERING_MODE + ', Text').attr({ w: VIEW_WIDTH, x: 0, y: 16, z: 1000 })
 			.text("Stage " + (parseInt(g_game.curLevel, 10) + 1))
 			.textColor('#9D9D9D', 1)
 			.textFont({ size: "16pt", weight: 'bold', family: GAME_FONT })
 			.css({ 'text-align': 'center'})
 
-		Crafty.e('2D, ' + RENDERING_MODE + ', Text').attr({ w: VIEW_WIDTH, x: 0, y: 96, z: 1000 })
+		Crafty.e('2D, ' + RENDERING_MODE + ', Text').attr({ w: VIEW_WIDTH, x: 0, y: 40, z: 1000 })
 			.text(GAME.DUNGEONLEVELS[g_game.curLevel].name)
 			.textColor('#9D9D9D', 1)
 			.textFont({ size: "24pt", weight: 'bold', family: GAME_FONT })
@@ -584,8 +540,8 @@ function init_scenes() {
 		var dlgInterval = setInterval(function() {
 			if (dlgCounter >= GAME.DUNGEONLEVELS[g_game.curLevel].sceneInfo.dialog.length) {
 				clearInterval(dlgInterval);
-				Crafty.e('2D, ' + RENDERING_MODE + ', Text, Keyboard').attr({ w: VIEW_WIDTH, x: 0, y: VIEW_HEIGHT-160, z: 1000 })
-					.text("Type space to continue...")
+				Crafty.e('2D, ' + RENDERING_MODE + ', Text, Keyboard').attr({ w: VIEW_WIDTH, x: 0, y: VIEW_HEIGHT-48, z: 1000 })
+					.text((g_game.curLevel == GAME.DUNGEONLEVELS.length-1) ? "Thanks for playing.  Space to restart.." : "Type space to continue...")
 					.textColor('#9D9D9D', 1)
 					.textFont({ size: "16pt", weight: 'bold', family: GAME_FONT })
 					.css({ 'text-align': 'center'})
@@ -593,7 +549,7 @@ function init_scenes() {
 						if (evt.key == Crafty.keys.SPACE) {
 							if (g_game.curLevel == GAME.DUNGEONLEVELS.length-1) {
 								localStorage.curLevel = 0;
-								Crafty.scene("intro");
+								Crafty.scene("mansion");
 							}
 							else {
 								Crafty.scene("main");
@@ -604,8 +560,8 @@ function init_scenes() {
 			else {
 				var dialog = GAME.DUNGEONLEVELS[g_game.curLevel].sceneInfo.dialog[dlgCounter];
 				Crafty.e('FloatingText')
-					.FloatingText(speakers[dialog.speaker].x/TILE_WIDTH - 1, speakers[dialog.speaker].y/TILE_HEIGHT - 0.25,
-						dialog.text, '#31A2F2', 90);
+					.FloatingText(speaker.x/TILE_WIDTH - 2, speaker.y/TILE_HEIGHT - 1,
+						dialog.text, '#0F65CD', 90);
 
 				dlgCounter++;
 			}

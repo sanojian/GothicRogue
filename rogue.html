@@ -75,22 +75,53 @@ function centerOnPlayers() {
 	} catch(ex) {}
 }
 
+function getRandomScream() {
+    var words = ['An', 'Bet', 'Corp', 'Des', 'Ex', 'Flam', 'Grav', 'Hur', 'In', 'Jux', 'Kal', 'Lor', 'Mani', 'Nox',
+        'Ort', 'Por', 'Quas', 'Rel', 'Sankt', 'Tym', 'Uus', 'Vas', 'Xen', 'Wiz', 'Ylem', 'Zu'];
 
-function getTextForLoot(level) {
-	if (level == 5) {
-		return 'Epic!';
-	}
-	else if (level == 4) {
-		return 'Legendary';
-	}
-	else if (level == 3) {
-		return 'Enchanted';
-	}
-	else if (level == 2) {
-		return 'Enforced';
-	}
-	return 'Sturdy';
+    var first = words[Math.floor(Math.random() * words.length)];
+    var second = words[Math.floor(Math.random() * words.length)];
 
+    return first + ' ' + second;
+}
+
+function getTextForLoot(level, type) {
+    if (type == 'sceptre') {
+        if (level == 3) {
+            return 'Brilliant';
+        }
+        else if (level == 2) {
+            return 'Pulsating';
+        }
+        return 'Glowing';
+    }
+    else if (type == 'book') {
+        if (level == 3) {
+            return 'Necromicon';
+        }
+        else if (level == 2) {
+            return 'Infernal';
+        }
+        return 'Somber';
+    }
+    else if (type == 'pistol') {
+        if (level == 3) {
+            return '9mm';
+        }
+        else if (level == 2) {
+            return '38';
+        }
+        return '22';
+    }
+    else {
+        if (level == 3) {
+            return 'Sharpened';
+        }
+        else if (level == 2) {
+            return 'Enforced';
+        }
+        return 'Sturdy';
+    }
 }
 
 function getXPforLevel(level) {
@@ -146,6 +177,16 @@ function playSong(newSong) {
     <div id="divCharNameText" class='nameText'>00</div>
     <img id="imgIchorMeter" src="./images/ichorMeter.png" style="position: absolute;z-index: 11000; opacity: 0.8;" />
     <div id="divIchorMeter" class="ichorMeter"></div>
+
+    <div id="ichorText_0" class="ichorText"></div>
+    <div id="ichorText_1" class="ichorText"></div>
+    <div id="ichorText_2" class="ichorText"></div>
+    <div id="ichorText_3" class="ichorText"></div>
+    <div id="ichorText_4" class="ichorText"></div>
+    <div id="ichorText_5" class="ichorText"></div>
+
+    <div id="uiNum1" class="uiNum">1</div>
+    <div id="uiNum2" class="uiNum">2</div>
 
 	<canvas id="canvasMiniMap"></canvas>
 

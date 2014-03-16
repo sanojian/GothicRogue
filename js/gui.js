@@ -60,6 +60,15 @@ function layoutGUI() {
 		top: pos.top + 53 + 5,
 		left: pos.left + 165 + 5
 	});
+	$('#uiNum1').css({
+		top: pos.top + 53 + 5 - 3,
+		left: pos.left + 109 + 5 + 24
+	});
+	$('#uiNum2').css({
+		top: pos.top + 53 + 5 - 3,
+		left: pos.left + 165 + 5 + 24
+	});
+
 	$('#imgIchorMeter').css({
 		top: pos.top + $('#imgCharBox').height() + 48,
 		left: pos.left + 32
@@ -70,29 +79,23 @@ function layoutGUI() {
 		left: posMeter.left + 4
 	});
 
+	$('div.ichorText').css({
+		'font-family': GAME_FONT
+	})
+
 	$('#canvasMiniMap').css({ width: 64*3, height: 64*3, left: pos.left + $('#cr-stage').width() - 64*3 - 6, top: pos.top + 6 });
 
 }
 
 function showIchorAmount() {
-	if (g_game.persona == 0 && g_game.ichorAmount >= 50) {
-		var xTile = g_game.wizard.x / TILE_WIDTH;
-		var yTile = g_game.wizard.y / TILE_HEIGHT;
-		Crafty.e('IchorExplode').IchorExplode(g_game.wizard.x, g_game.wizard.y);
-		g_game.wizard.destroy();
-		g_game.wizard = Crafty.e('Gunman')
-			.Gunman(xTile, yTile, g_game.wizardControls);
+	if (g_game.persona == 0 && g_game.ichorAmount >= 48) {
 		g_game.persona = 1;
+		loadPersona();
 		//g_game.ichorAmount = 0
 	}
 	else if (g_game.persona == 1 && g_game.ichorAmount >= 90) {
-		var xTile = g_game.wizard.x / TILE_WIDTH;
-		var yTile = g_game.wizard.y / TILE_HEIGHT;
-		Crafty.e('IchorExplode').IchorExplode(g_game.wizard.x, g_game.wizard.y);
-		g_game.wizard.destroy();
-		g_game.wizard = Crafty.e('Caster')
-			.Caster(xTile, yTile, g_game.wizardControls);
 		g_game.persona = 2;
+		loadPersona();
 	}
 
 	var maxHeight = 153;
@@ -102,5 +105,70 @@ function showIchorAmount() {
 		height: height,
 		top: posMeter.top + 4 + maxHeight - height
 	});
+}
+
+function showAddIchor(amt) {
+	var id = g_game.nextIchorId || 0 ;
+	g_game.nextIchorId = (id + 1) % 6;
+
+	var $txt = $('#ichorText_' + id);
+	$txt.text(amt);
+	var pos = $('#cr-stage').offset();
+	var posMeter = $('#imgIchorMeter').offset();
+	$txt.css({
+		left: pos.left + VIEW_WIDTH/2,
+		top: pos.top + VIEW_HEIGHT/2
+	}).show().animate( {
+			top: posMeter.top - 20,
+			left: posMeter.left + 4
+		},
+		{
+			duration: 600,
+			//easing: 'easeOutQuint',
+			complete: function() {
+				$txt.animate({
+						top: posMeter.top + 120
+					},
+					{
+						duration: 1000,
+						complete: function() {
+							g_game.ichorAmount = Math.min(100, g_game.ichorAmount + amt);
+							showIchorAmount();
+							$txt.hide();
+						}
+					}
+				)
+			}
+		}
+	);
+
+
+}
+
+function loadPersona() {
+	var xTile = g_game.wizard.x / TILE_WIDTH;
+	var yTile = g_game.wizard.y / TILE_HEIGHT;
+	Crafty.e('IchorExplode').IchorExplode(g_game.wizard.x, g_game.wizard.y);
+	g_game.wizard.destroy();
+	if (g_game.persona == 2) {
+		g_game.wizard = Crafty.e('Caster')
+			.Caster(xTile, yTile, g_game.wizardControls);
+		$('#uiNum1').show();
+		$('#uiNum2').show();
+	}
+	else if (g_game.persona == 1) {
+		g_game.wizard = Crafty.e('Gunman')
+			.Gunman(xTile, yTile, g_game.wizardControls);
+		$('#uiNum1').show();
+		$('#uiNum2').hide();
+	}
+	else {
+		g_game.wizard = Crafty.e('Peasant')
+			.Peasant(xTile, yTile, g_game.wizardControls);
+		$('#uiNum1').show();
+		$('#uiNum2').hide();
+	}
+
+	g_game.wizard.speak('Where am I?')
 
 }

@@ -39,25 +39,41 @@ window.GAME = {
 	SPELLS: {
 		Missle: {
 			mana: 4,
-			damage: 2,
-			speed: 5,
+			damage: 1,
+			speed: 3,
 			range: 200,
 			sound: 'missle'
 		},
 		Fireball: {
 			mana: 8,
-			damage: 2,
-			speed: 8,
-			range: 300,
+			damage: 1,
+			speed: 9,
+			range: 400,
 			sound: 'fireball'
 		},
 		Sleep: {
-			mana: 17,
+			mana: 8,
 			damage: 0,
 			speed: 8,
 			range: 160,
 			aoe: 2,
 			sound: 'sleep'
+		},
+		LighteningStorm: {
+			mana: 15,
+			damage: 2,
+			speed: 8,
+			range: 160,
+			aoe: 2,
+			sound: 'lightening'
+		},
+		FireStorm: {
+			mana: 10,
+			damage: 1,
+			speed: 8,
+			range: 160,
+			aoe: 2,
+			sound: 'fireball'
 		},
 		Lightening: {
 			mana: 20,
@@ -75,7 +91,7 @@ window.GAME = {
 		},
 		Bullet: {
 			mana: 4,
-			damage: 2,
+			damage: 1,
 			speed: 12,
 			range: 180,
 			sound: 'gunshot'
@@ -121,35 +137,34 @@ window.GAME = {
 	},
 	DUNGEONLEVELS: [
 		{
-			name: 'The Entryway',
+			name: 'Entry Into the Unknown',
 			spawnRate: 0.07,
 			mobs: [ 
-				{ sprite: 'bat_king', 	prob: 1,	type: 'fighter', 	level: 2, 	health: 8,	 	mana: 0, 	offense: 2, 	defense: 12		},
-				{ sprite: 'snake', 		prob: 5,	type: 'fighter', 	level: 1, 	health: 2, 	mana: 0, 	offense: 1, 	defense: 4 		},
-				{ sprite: 'bat', 		prob: 4,	type: 'fighter', 	level: 1, 	health: 2, 	mana: 0, 	offense: 1, 	defense: 4		}
+				{ sprite: 'bat_king', 	prob: 1,	type: 'fighter', 	level: 2, 	health: 4,	 	mana: 0, 	offense: 2, 	defense: 12		},
+				{ sprite: 'bat', 		prob: 4,	type: 'fighter', 	level: 1, 	health: 2, 	mana: 0, 	offense: 1, 	defense: 4		},
+				{ sprite: 'snake', 		prob: 5,	type: 'fighter', 	level: 1, 	health: 2, 	mana: 0, 	offense: 1, 	defense: 4 		}
 			],
 			graphics: {
 				wall: 'wall_cave',
 				ceiling: 'ceiling_cave',
 				floor: 'floor_dirt'
 			},
-			song: 'DST-TheHauntedChapel',
+			song: 'DST-BeyondTheseForests',
 			sceneInfo: {
 				pic1: 'scene_entrance1',
 				pic2: 'scene_graveyard',
 				pic3: 'scene_entrance2',
 				dialog: [
-					{ speaker: 'fighter', text: 'We found it!' },
-					{ speaker: 'wizard', text: 'I am not so sure about this.' }
+					{ speaker: 'fighter', text: 'What is this place?' }
 				]
 			}
 		},
 		{
-			name: 'The Skeleton Maze',
+			name: 'Buried Too Long',
 			spawnRate: 0.07,
 			mobs: [ 
-				{ sprite: 'skeleton_magic',		prob: 1,	type: 'caster', 	level: 3, 	health: 12, 	mana: 4, 	offense: 1, 	defense: 12,	spell: 'Missle'	},
-				{ sprite: 'skeleton', 			prob: 6,	type: 'fighter', 	level: 2, 	health: 3,	 	mana: 0, 	offense: 1, 	defense: 8		},
+				{ sprite: 'skeleton_magic',		prob: 1,	type: 'caster', 	level: 2, 	health: 6, 	mana: 4, 	offense: 1, 	defense: 12,	spell: 'Missle'	},
+				{ sprite: 'skeleton', 			prob: 6,	type: 'fighter', 	level: 2, 	health: 2,	 	mana: 0, 	offense: 1, 	defense: 8		},
 				{ sprite: 'skeleton_archer', 	prob: 3,	type: 'caster', 	level: 2, 	health: 2,	 	mana: 4, 	offense: 1, 	defense: 8,		spell: 'Arrow' }
 			],
 			graphics: {
@@ -163,54 +178,48 @@ window.GAME = {
 				pic2: 'scene_catacombs2',
 				pic3: 'scene_catacombs3',
 				dialog: [
-					{ speaker: 'wizard', text: 'Undead here.' },
-					{ speaker: 'wizard', text: 'We need a plan.' },
-					{ speaker: 'fighter', text: 'Let\'s bash em!' },
-					{ speaker: 'wizard', text: 'We should think this through.' },
-					{ speaker: 'fighter', text: 'And then bash em!' }
+					{ speaker: 'wizard', text: 'Something moves here' },
+					{ speaker: 'wizard', text: 'that should not be alive.' }
 				]
 			}
 		},
 		{
-			name: 'The Orc Kingdom',
+			name: 'Death Does not Become You',
 			spawnRate: 0.07,
 			mobs: [ 
-				{ sprite: 'orc_chief', 	prob: 1,	type: 'fighter', 	level: 4, 	health: 26,	 	mana: 0, 	offense: 22, 	defense: 18		},
-				{ sprite: 'orc', 		prob: 6,	type: 'fighter', 	level: 3, 	health: 14, 	mana: 0, 	offense: 22, 	defense: 18 	},
-				{ sprite: 'orc_archer', prob: 3,	type: 'caster',		level: 3, 	health: 11, 	mana: 4, 	offense: 7, 	defense: 10,	spell: 'Arrow' }
+				{ sprite: 'king_mummy', 	prob: 1,	type: 'fighter', 	level: 3, 	health: 8,	 	mana: 0, 	offense: 1, 	defense: 18		},
+				{ sprite: 'zombie', 		prob: 6,	type: 'fighter', 	level: 2, 	health: 2, 	mana: 0, 	offense: 1, 	defense: 18 	},
+				{ sprite: 'headless', prob: 3,	type: 'caster',		level: 2, 	health: 2, 	mana: 4, 	offense: 1, 	defense: 10,	spell: 'Missle' }
 			],
 			graphics: {
-				wall: 'wall_brick',
-				ceiling: 'ceiling_brick',
-				floor: 'floor_cracks'
+				wall: 'wall_muck',
+				ceiling: 'ceiling_muck',
+				floor: 'floor_muck'
 			},
 			song: 'DST-Azum',
 			sceneInfo: {
-				pic1: 'scene_castle1',
-				pic2: 'scene_castle2',
-				pic3: 'scene_castle3',
+				pic1: 'scene_temple1',
+				pic2: 'scene_temple2',
+				pic3: 'scene_temple3',
 				dialog: [
-					{ speaker: 'wizard', text: 'I think I smell orcs.' },
-					{ speaker: 'fighter', text: '...' },
-					{ speaker: 'fighter', text: 'err...' },
-					{ speaker: 'fighter', text: 'Sorry that was me.' },
-					{ speaker: 'wizard', text: '*sigh*' }
+					{ speaker: 'wizard', text: 'I thought the skeletons .' },
+					{ speaker: 'wizard', text: 'were bad. These things' },
+					{ speaker: 'wizard', text: 'smell much worse.' }
 				]
 			}
 		},
 		{
-			name: 'Revenge of the Arch Mage',
+			name: 'The Dead Want Revenge',
 			spawnRate: 0.07,
 			mobs: [ 
-				{ sprite: 'skeleton_boss', 		prob: 1,	type: 'fighter', 	level: 5, 	health: 32,	 	mana: 0, 	offense: 32, 	defense: 32		},
-				{ sprite: 'skeleton_warrior', 	prob: 4,	type: 'fighter', 	level: 4, 	health: 26,	 	mana: 0, 	offense: 26, 	defense: 18		},
-				{ sprite: 'skeleton_mage', 		prob: 3,	type: 'caster', 	level: 4, 	health: 14, 	mana: 4, 	offense: 9, 	defense: 12,	spell: 'Missle'	},
-				{ sprite: 'skeleton_necro', 	prob: 2,	type: 'caster',		level: 4, 	health: 11, 	mana: 12, 	offense: 9, 	defense: 8,		spell: 'Fireball' }
+				{ sprite: 'skeleton_boss', 		prob: 1,	type: 'fighter', 	level: 3, 	health: 8,	 	mana: 0, 	offense: 2, 	defense: 32		},
+				{ sprite: 'skeleton_warrior', 	prob: 6,	type: 'fighter', 	level: 2, 	health: 3,	 	mana: 0, 	offense: 1, 	defense: 18		},
+				{ sprite: 'skeleton_shooter', 	prob: 3,	type: 'caster', 	level: 2, 	health: 2, 	mana: 4, 	offense: 1, 	defense: 12,	spell: 'Bullet'	}
 			],
 			graphics: {
-				wall: 'wall_mud',
-				ceiling: 'ceiling_mud',
-				floor: 'floor_cracks'
+				wall: 'wall_sandstone',
+				ceiling: 'ceiling_sandstone',
+				floor: 'floor_sandstone'
 			},
 			song: 'DST-WaterTemple-I',
 			sceneInfo: {
@@ -218,59 +227,78 @@ window.GAME = {
 				pic2: 'scene_catacombs3',
 				pic3: 'scene_catacombs2',
 				dialog: [
-					{ speaker: 'fighter', text: 'Skeletons again?' },
-					{ speaker: 'wizard', text: 'They look angry this time.' }
+					{ speaker: 'fighter', text: 'Skeletons again...' },
+					{ speaker: 'wizard', text: 'Will we ever get out of here?' }
 				]
 			}
 		},
 		{
-			name: 'Realm of the Necromancer',
+			name: 'In Need of Answers',
 			spawnRate: 0.07,
 			mobs: [ 
-				{ sprite: 'necromancer',	prob: 1,	type: 'caster', 	level: 5, 	health: 26,	 	mana: 24, 	offense: 22, 	defense: 18,	spell: 'Fireball'	},
-				{ sprite: 'death_knight', 	prob: 4,	type: 'fighter', 	level: 5, 	health: 26,	 	mana: 0, 	offense: 22, 	defense: 18		},
-				{ sprite: 'imp', 			prob: 2,	type: 'caster', 	level: 5, 	health: 14, 	mana: 18, 	offense: 17, 	defense: 12,	spell: 'Fireball'	},
-				{ sprite: 'death_mage', 	prob: 3,	type: 'caster', 	level: 5, 	health: 14, 	mana: 30, 	offense: 18, 	defense: 12,	spell: 'Lightening'	}
+				{ sprite: 'witch',			prob: 1,	type: 'caster', 	level: 3, 	health: 8,	 	mana: 24, 	offense: 1, 	defense: 18,	spell: 'Fireball'	},
+				{ sprite: 'neophyte', 		prob: 4,	type: 'fighter', 	level: 2, 	health: 1,	 	mana: 0, 	offense: 1, 	defense: 18		},
+				{ sprite: 'enforcer',		prob: 3,	type: 'fighter', 	level: 2, 	health: 2, 		mana: 18, 	offense: 1, 	defense: 12	}
 			],
 			graphics: {
-				wall: 'wall_brick',
-				ceiling: 'ceiling_brick',
-				floor: 'floor_cracks'
+				wall: 'wall_stone',
+				ceiling: 'ceiling_stone',
+				floor: 'floor_brick'
 			},
 			song: 'DST-Alters',
 			sceneInfo: {
-				pic1: 'scene_temple1',
-				pic2: 'scene_temple2',
-				pic3: 'scene_temple3',
+				pic1: 'scene_castle1',
+				pic2: 'scene_castle2',
+				pic3: 'scene_castle3',
 				dialog: [
-					{ speaker: 'wizard', text: 'This looks dangerous.' },
-					{ speaker: 'fighter', text: 'For once I agree.' },
-					{ speaker: 'wizard', text: 'If I don\'t make it' },
-					{ speaker: 'wizard', text: 'you can have my robe' },
-					{ speaker: 'wizard', text: 'and wizard hat.' },
-					{ speaker: 'fighter', text: 'Its a deal!' }
+					{ speaker: 'wizard', text: 'Who is behind all' },
+					{ speaker: 'fighter', text: 'of this madness?' }
 				]
 			}
 		},
 		{
-			name: 'You Saved the Kingdom!',
+			name: 'The Truth Dawns',
+			spawnRate: 0.07,
+			mobs: [
+				{ sprite: 'demon',			prob: 1,	type: 'caster', 	level: 3, 	health: 8,	 	mana: 24, 	offense: 1, 	defense: 18,	spell: 'Fireball'	},
+				{ sprite: 'priest', 		prob: 4,	type: 'caster', 	level: 3, 	health: 1,	 	mana: 24, 	offense: 1, 	defense: 18	,	spell: 'Bullet'	},
+				{ sprite: 'neophyte',		prob: 3,	type: 'fighter', 	level: 3, 	health: 2, 		mana: 18, 	offense: 1, 	defense: 12	}
+			],
+			graphics: {
+				wall: 'wall_stone',
+				ceiling: 'ceiling_stone',
+				floor: 'floor_brick'
+			},
+			song: 'DST-Alters',
+			sceneInfo: {
+				pic1: 'scene_castle1',
+				pic2: 'scene_castle2',
+				pic3: 'scene_castle3',
+				dialog: [
+					{ speaker: 'wizard', text: 'Who is behind all' },
+					{ speaker: 'fighter', text: 'of this madness?' }
+				]
+			}
+		},
+		{
+			name: 'The Dead Can Now Rest',
+			mobs: [
+				{ sprite: 'demon',			prob: 1,	type: 'caster', 	level: 3, 	health: 8,	 	mana: 24, 	offense: 1, 	defense: 18,	spell: 'Fireball'	},
+				{ sprite: 'peasant', 		prob: 4,	type: 'caster', 	level: 3, 	health: 1,	 	mana: 24, 	offense: 1, 	defense: 18	,	spell: 'Bullet'	},
+				{ sprite: 'neophyte',		prob: 3,	type: 'fighter', 	level: 3, 	health: 2, 		mana: 18, 	offense: 1, 	defense: 12	}
+			],
 			song: 'DST-TheHauntedChapel',
 			sceneInfo: {
-				pic1: 'scene_landmark1',
+				pic1: 'scene_entrance1',
 				dialog: [
-					{ speaker: 'wizard', text: 'We saved the Kingdom!' },
-					{ speaker: 'fighter', text: '...' },
-					{ speaker: 'fighter', text: 'Which Kingdom?' },
-					{ speaker: 'wizard', text: 'You know, your leige?' },
-					{ speaker: 'wizard', text: 'Your royal highness, and court?' },
-					{ speaker: 'fighter', text: '...' },
-					{ speaker: 'wizard', text: 'Well good job anyway.' },
-					{ speaker: 'fighter', text: 'Thanks!  You too.' }
+					{ speaker: 'wizard', text: 'The priests of this' },
+					{ speaker: 'fighter', text: 'unholy church were' },
+					{ speaker: 'fighter', text: 'corrupted by the' },
+					{ speaker: 'wizard', text: 'mysterious ichor.' },
+					{ speaker: 'wizard', text: 'But where did it come' },
+					{ speaker: 'fighter', text: 'from?  I have no answers!' }
 				]
 			}
 		}
 	]
-
-
-
 }

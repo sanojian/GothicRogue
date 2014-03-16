@@ -24,7 +24,8 @@ function init_Mob() {
 				this.addComponent('LitObject');
 				this.LitObject();
 			}
-
+			// make sure collision box is not too big
+			this.collision(new Crafty.polygon([[this.w/2 - TILE_WIDTH/2, this.h - TILE_HEIGHT], [this.w/2 + TILE_WIDTH/2, this.h - TILE_HEIGHT], [this.w/2 + TILE_WIDTH/2, this.h/2 + TILE_HEIGHT/2], [this.w/2 - TILE_WIDTH/2, this.h/2 + TILE_HEIGHT/2]]));
 
 			this.locX = x;
 			this.locY = y;
@@ -40,12 +41,12 @@ function init_Mob() {
 			else if (movement.x > 0){
 				this.unflip();
 			}
-			this.attr({ x: this.locX * TILE_WIDTH, y: this.locY * TILE_HEIGHT });
+			this.moveToLoc();
 			var walls = this.hit('solid');
 			if (walls) {
 				this.locX -= movement.x;
 				this.locY -= movement.y;
-				this.attr({ x: this.locX * TILE_WIDTH, y: this.locY * TILE_HEIGHT });
+				this.moveToLoc();
 			}
 			else {
 				var mobs = this.hit('Mob');
@@ -53,33 +54,42 @@ function init_Mob() {
 					this.attackMob(mobs[0].obj, movement);
 					this.locX -= movement.x;
 					this.locY -= movement.y;
-					this.attr({ x: this.locX * TILE_WIDTH, y: this.locY * TILE_HEIGHT });
+					this.moveToLoc();
 				}
 			}
+		},
+		moveToLoc: function() {
+			this.attr({ x: this.locX * TILE_WIDTH - (this.w/2 - TILE_WIDTH/2), y: this.locY * TILE_HEIGHT - (this.h - TILE_HEIGHT) });
 		},
 		takeDamage: function(amt, from) {
 
 			this.sleeping = false;
-			//Crafty.e('FloatingText')
-			//	.FloatingText(this.locX, this.locY, amt, '#BE2633');
+			Crafty.e('FloatingText')
+				.FloatingText(this.locX, this.locY, amt, '#BE2633');
 
 			this.health = Math.max(0, this.health - amt);
 			this.trigger('HealthChanged');
 			if (this.health <= 0) {
 				from.addXP(getXPforLevel(this.level));
 				// loot
-				if (Math.random() < 0.2) {
+				var rand = Math.random();
+				if (rand < 0.2) {
 					var item = Math.floor(Math.random() * 4);
 					var i = 0;
 					for (var key in GAME.EQUIPMENT) {
 						if (i == item) {
-							Crafty.e('Treasure').Treasure(key, this.level, this.locX + 0.25, this.locY + 0.4);
+							Crafty.e('Treasure').Treasure(key, this.level, this.locX + 0.25 + (-0.1 + Math.random()*0.2), this.locY + 0.4);
 						}
 						i++;
 					}
 				}
 				else {
-					Crafty.e('Ichor').Ichor(this.locX, this.locY, 'ichor', 50);
+					if (rand > 0.96) {
+						Crafty.e('Potion').Potion(this.locX + (-0.1 + Math.random()*0.2), this.locY, 'potion');
+					}
+					else {
+						Crafty.e('Ichor').Ichor(this.locX + (-0.1 + Math.random()*0.2), this.locY, 'ichor', 3 + Math.floor(7 * Math.random()));
+					}
 				}
 
 				// flying bones
@@ -88,9 +98,9 @@ function init_Mob() {
 						.attr({ x: this.x - TILE_WIDTH/3 + 2*Math.random()*TILE_WIDTH/3, y: this.y + TILE_WIDTH/4 + Math.random()*TILE_WIDTH/2, z: this.z+1 })
 						.bind('EnterFrame', function() {
 							this.frameCount = this.frameCount ? this.frameCount + 1 : 1;
-							this.dx = this.dx ? this.dx : 2 - Math.random() * 4;
-							this.dy = this.dy ? this.dy : -3 - Math.random() * 4;
-							this.dy += 0.3;
+							this.dx = this.dx ? this.dx : 2 - Math.random() * 2;
+							this.dy = this.dy ? this.dy : -3 - Math.random() * 2;
+							this.dy += 0.2;
 							this.duration = this.duration ? this.duration : 15 + 30 * Math.random();
 							this.attr({ x: this.x + this.dx, y: this.y + this.dy });
 							if (this.frameCount > this.duration) {
@@ -108,6 +118,12 @@ function init_Mob() {
 			this.delay(function() {
 				this.sleeping = false;
 			}, 4000);
+		},
+		speak: function(text) {
+			Crafty.e('FloatingText').FloatingText(this.locX-1, this.locY
+				, text
+				, '#0F65CD', 120);
+
 		}
 	});
 
@@ -151,7 +167,7 @@ function init_Mob() {
 								if (props.type == 'caster' && this.mana >= GAME.SPELLS[props.spell].mana && (dist <= Math.abs(dx) || dist <= Math.abs(dy))) {
 									// cast spell
 									Crafty.e('FloatingText')
-										.FloatingText(this.locX - 0.5, this.locY, 'Grav Ex', '#500000', 50);
+										.FloatingText(this.locX - 0.5, this.locY, getRandomScream(), '#500000', 50);
 									this.delay(function() {
 										Crafty.e(props.spell)
 											[props.spell](this.locX, this.locY, movement, this, 'Player');

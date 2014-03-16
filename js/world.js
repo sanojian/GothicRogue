@@ -21,12 +21,28 @@ function init_world() {
 	Crafty.c('Ichor', {
 		Ichor: function(x, y, type, amt) {
 			this.requires('2D, ' + RENDERING_MODE + ', Collision, LitObject, loot, ' + type)
-				.attr({ x: x * TILE_WIDTH + TILE_WIDTH/4, y: y * TILE_HEIGHT + TILE_HEIGHT/2, z: 90 })
+				.attr({ x: x * TILE_WIDTH + TILE_WIDTH/4, y: y * TILE_HEIGHT + TILE_HEIGHT/2, z: 1000 })
 				.collision()
 				.LitObject();
 
 			this.treasureType = 'ichor';
 			this.treasureAmt = amt;
+
+			var lightSource = Crafty.e('LightSource').LightSource(this.x + this.w/2, this.y + this.h/2, 3*TILE_WIDTH, 0.7, true);
+			this.attach(lightSource);
+
+			return this;
+		}
+	});
+
+	Crafty.c('Potion', {
+		Potion: function(x, y, type) {
+			this.requires('2D, ' + RENDERING_MODE + ', Collision, LitObject, loot, ' + type)
+				.attr({ x: x * TILE_WIDTH + TILE_WIDTH/4, y: y * TILE_HEIGHT + TILE_HEIGHT/2, z: 1000 })
+				.collision()
+				.LitObject();
+
+			this.treasureType = 'potion';
 
 			var lightSource = Crafty.e('LightSource').LightSource(this.x + this.w/2, this.y + this.h/2, 3*TILE_WIDTH, 0.7, true);
 			this.attach(lightSource);

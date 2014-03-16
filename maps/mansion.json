@@ -31,20 +31,6 @@
          "name":"Object Layer 1",
          "objects":[
                 {
-                 "gid":265,
-                 "height":0,
-                 "name":"",
-                 "properties":
-                    {
-                     "entity":"Ichor"
-                    },
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":935,
-                 "y":117
-                }, 
-                {
                  "gid":523,
                  "height":0,
                  "name":"",

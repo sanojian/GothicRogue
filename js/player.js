@@ -99,19 +99,29 @@ function init_Player() {
 							treasure.destroy();
 							g_game.sounds.pickup.play();
 							Crafty.e('FloatingText').FloatingText(this.locX-1, this.locY
-								, getTextForLoot(treasure.treasureLevel) + ' ' + treasure.treasureType
-								, '#A3CE27');
+								, getTextForLoot(treasure.treasureLevel, treasure.treasureType) + ' ' + treasure.treasureType
+								, '#A3CE27', 120);
 
 							this.dressInEquipment();
 						}
 					}
 					else if (treasure.has('Ichor')) {
-						g_game.ichorAmount = Math.min(100, g_game.ichorAmount + treasure.treasureAmt);
+						showAddIchor(treasure.treasureAmt);
+						treasure.destroy();
+						g_game.sounds.pickup.play();
+						//Crafty.e('FloatingText').FloatingText(this.locX, this.locY
+						//	, treasure.treasureAmt
+						//	, '#5193FF');
+
+					}
+					else if (treasure.has('Potion')) {
+						g_game.wizard.health = Math.min(g_game.wizard.maxHealth, g_game.wizard.health + 1);
+						this.showHealth();
 						treasure.destroy();
 						g_game.sounds.pickup.play();
 						Crafty.e('FloatingText').FloatingText(this.locX, this.locY
-							, treasure.treasureAmt
-							, '#5193FF');
+							, '+'
+							, '#156615');
 
 						showIchorAmount();
 					}
@@ -171,85 +181,20 @@ function init_Player() {
 		},
 		doDestroy: function() {
 			g_game.wizard.destroy();
-			setTimeout(function() {
-				Crafty.scene("death");
-			}, 3000);
-		}
-	});
-
-	Crafty.c('Wizard', {
-		bCasting: false,
-
-		Wizard: function(x, y, controls) {
-			this.requires('Player')
-				.bind('KeyDown', function(evt) {
-					if (evt.key == Crafty.keys['1'] && this.mana >= GAME.SPELLS.Missle.mana) {
-						this.bCasting = true;
-						this.mana -= GAME.SPELLS.Missle.mana;
-						this.spell = 'Missle';
-						this.showHealth('wizard');
-						Crafty.e('FloatingText')
-							.FloatingText(this.locX-1, this.locY,	'Ort Por', '#31A2F2', 50);
-
-					}
-					else if (evt.key == Crafty.keys['2'] && this.mana >= GAME.SPELLS.Fireball.mana) {
-						this.bCasting = true;
-						this.mana -= GAME.SPELLS.Fireball.mana;
-						this.spell = 'Fireball';
-						this.showHealth('wizard');
-						Crafty.e('FloatingText')
-							.FloatingText(this.locX-1, this.locY,	'Vas Flam', '#31A2F2', 50);
-					}
-					else if (evt.key == Crafty.keys['3'] && this.mana >= GAME.SPELLS.Sleep.mana) {
-						this.bCasting = true;
-						this.mana -= GAME.SPELLS.Sleep.mana;
-						this.spell = 'Sleep';
-						this.showHealth('wizard');
-						Crafty.e('FloatingText')
-							.FloatingText(this.locX-1, this.locY,	'Kal Zu', '#31A2F2', 50);
-					}
-					else if (evt.key == Crafty.keys['4'] && this.mana >= GAME.SPELLS.Lightening.mana) {
-						this.bCasting = true;
-						this.mana -= GAME.SPELLS.Lightening.mana;
-						this.spell = 'Lightening';
-						this.showHealth('wizard');
-						Crafty.e('FloatingText')
-							.FloatingText(this.locX-1, this.locY,	'Grav Ex', '#31A2F2', 50);
-					}
-				})
-
-			this.class = 'wizard';
-
-			this.equipment = {
-				robe: 0,
-				hat: 0,
-				staff: 0
-			}
-
-			this.Player(x, y, 'wizard', controls);
-			this.calcStats();
-
-
-			return this;
-		},
-		checkSpellMana: function() {
-			for (var key in GAME.SPELLS) {
-				$('#imgSpell_' + key).css({ visibility: (this.mana >= GAME.SPELLS[key].mana) ? 'visible' : 'hidden' });
-			}
-		},
-		performMove: function(movement) {
-			if (this.bCasting) {
-				Crafty.e(this.spell)
-					[this.spell](this.locX, this.locY, movement, this, 'Creature');
-				this.bCasting = false;
+			if (g_game.persona == 0) {
+				setTimeout(function() {
+					Crafty.scene("death");
+				}, 3000);
 			}
 			else {
-				this.moveMob(movement);
-				this.searchForTreasure();
-				this.lookForExit();
+				g_game.persona -= 1;
+				g_game.ichorAmount = 0;
+				loadPersona();
+				showIchorAmount();
 			}
 		}
 	});
+
 
 	Crafty.c('Caster', {
 		bCasting: false,
@@ -258,7 +203,7 @@ function init_Player() {
 		Caster: function(x, y, controls) {
 			this.requires('Player, Delay')
 				.bind('KeyDown', function(evt) {
-					if (evt.key == Crafty.keys['1'] && !this.bCasting) {
+					if (evt.key == Crafty.keys['1'] && this.equipment.sceptre > 0 && !this.bCasting) {
 						this.bCasting = true;
 						g_game.sounds.lockandload.play();
 						this.spell = 'Fireball';
@@ -267,6 +212,29 @@ function init_Player() {
 							this.bReadyToCast = true;
 							Crafty.e('FloatingText')
 								.FloatingText(this.locX - 0.5, this.locY, 'Ort Por', '#31A2F2', 50);
+						}, 500);
+					}
+					else if (evt.key == Crafty.keys['2'] && this.equipment.book > 0 && !this.bCasting) {
+						this.bCasting = true;
+						g_game.sounds.lockandload.play();
+						var words = 'Kal Zu';
+						if (this.equipment.book == 2) {
+							this.spell = 'FireStorm';
+							words = 'Vas Flam';
+						}
+						else if (this.equipment.book == 3) {
+							this.spell = 'LighteningStorm';
+							words = 'Grav Ex';
+						}
+						else {
+							this.spell = 'Sleep';
+							words = 'Kal Zu';
+						}
+
+						this.delay(function() {
+							this.bReadyToCast = true;
+							Crafty.e('FloatingText')
+								.FloatingText(this.locX - 0.5, this.locY, 'Kal Zu', '#31A2F2', 50);
 						}, 500);
 					}
 				});
@@ -286,7 +254,7 @@ function init_Player() {
 
 			this.Player(x, y, 'caster', controls);
 			this.$nameText.html('Alistair<br>&nbsp;&nbsp;&nbsp;Van Buren');
-			this.$imgPortrait.addClass('portrait-caster');
+			this.$imgPortrait.removeClass().addClass('charPortrait portrait-caster');
 			this.calcStats();
 
 			return this;
@@ -295,9 +263,16 @@ function init_Player() {
 			if (this.bReadyToCast) {
 				Crafty.e(this.spell)
 					[this.spell](this.locX, this.locY, movement, this, 'Creature');
+
 				this.bReadyToCast = this.bCasting = false;
+
+				g_game.ichorAmount = Math.max(0, g_game.ichorAmount - GAME.SPELLS[this.spell].mana);
+				showIchorAmount();
+				if (g_game.ichorAmount == 0) {
+					loadPersona();
+				}
 			}
-			else if (this.bShooting) {
+			else if (this.bCasting) {
 				// cannot move
 				return;
 			}
@@ -320,7 +295,7 @@ function init_Player() {
 		Gunman: function(x, y, controls) {
 			this.requires('Player, Delay')
 				.bind('KeyDown', function(evt) {
-					if (evt.key == Crafty.keys['1'] && !this.bShooting) {
+					if (evt.key == Crafty.keys['1'] && this.equipment.pistol > 0 && !this.bShooting) {
 						this.bShooting = true;
 						g_game.sounds.lockandload.play();
 						this.spell = 'Bullet';
@@ -348,7 +323,7 @@ function init_Player() {
 
 			this.Player(x, y, 'gunman', controls);
 			this.$nameText.html('Pidgeon<br>&nbsp;&nbsp;&nbsp;Jack');
-			this.$imgPortrait.addClass('portrait-gunman');
+			this.$imgPortrait.removeClass().addClass('charPortrait portrait-gunman');
 			this.calcStats();
 
 			return this;
@@ -379,7 +354,20 @@ function init_Player() {
 		bReadyToFire: false,
 
 		Peasant: function(x, y, controls) {
-			this.requires('Player, Delay');
+			this.requires('Player, Delay')
+				.bind('KeyDown', function(evt) {
+					if (evt.key == Crafty.keys['1'] && this.equipment.pistol > 0 && !this.bShooting) {
+						this.bShooting = true;
+						g_game.sounds.lockandload.play();
+						this.spell = 'Bullet';
+
+						this.delay(function() {
+							this.bReadyToFire = true;
+							Crafty.e('FloatingText')
+								.FloatingText(this.locX - 0.5, this.locY, 'loaded', '#31A2F2', 16);
+						}, 500);
+					}
+				});
 
 			this.class = 'peasant';
 
@@ -390,21 +378,32 @@ function init_Player() {
 			else {
 				this.equipment ={
 					pistol: 0,
-					knife: 1
+					knife: 0
 				};
 			};
 
 			this.Player(x, y, 'peasant', controls);
 			this.$nameText.html('Rebecca<br>&nbsp;&nbsp;&nbsp;Van Buren');
-			this.$imgPortrait.addClass('portrait-peasant');
+			this.$imgPortrait.removeClass().addClass('charPortrait portrait-peasant');
 			this.calcStats();
 
 			return this;
 		},
 		performMove: function(movement) {
-			this.moveMob(movement);
-			this.searchForTreasure();
-			this.lookForExit();
+			if (this.bReadyToFire) {
+				Crafty.e(this.spell)
+					[this.spell](this.locX, this.locY, movement, this, 'Creature');
+				this.bReadyToFire = this.bShooting = false;
+			}
+			else if (this.bShooting) {
+				// cannot move
+				return;
+			}
+			else {
+				this.moveMob(movement);
+				this.searchForTreasure();
+				this.lookForExit();
+			}
 		},
 		calcDamageTo: function(mob) {
 			return GAME.EQUIPMENT.knife.offense[this.equipment.knife];

@@ -8,7 +8,7 @@ function init_fx() {
 				.attr({ w: 320, h: 20, x: x*TILE_WIDTH + TILE_WIDTH/2, y: y*TILE_HEIGHT, z: 200 })
 				.textColor(color, 1)
 				.text(txt)
-				.textFont({ size: "12pt", weight: 'bold', family: GAME_FONT })
+				.textFont({ size: "16pt", weight: 'bold', family: GAME_FONT })
 				//.css({ 'font-size': '16pt', 'font-weight': 'bold', 'font-family': GAME_FONT })
 				.tween({ y: y*TILE_HEIGHT - 48 }, speed || 25)
 				.bind('TweenEnd', function() {
