@@ -1,0 +1,83 @@
+div.charSlot {
+  position: absolute;
+  z-index: 11000;
+  width: 32px;
+  height: 32px;
+  background-image: url("../../images/crl_items_x2.gif");
+}
+.icon-pistol-0 {
+  background-position: 0px -160px;
+}
+.icon-pistol-1 {
+  background-position: -672px -96px;
+}
+.icon-pistol-2 {
+  background-position: -704px -96px;
+}
+.icon-pistol-3 {
+  background-position: -736px -96px;
+}
+.icon-knuckles-0 {
+  background-position: 0px -160px;
+}
+.icon-knuckles-1 {
+  background-position: -576px -96px;
+}
+.icon-knuckles-2 {
+  background-position: -608px -96px;
+}
+.icon-knuckles-3 {
+  background-position: -640px -96px;
+}
+.icon-knife-0 {
+  background-position: 0px -160px;
+}
+.icon-knife-1 {
+  background-position: 0px -64px;
+}
+.icon-knife-2 {
+  background-position: -832px -64px;
+}
+.icon-knife-3 {
+  background-position: -416px -64px;
+}
+.icon-sceptre-0 {
+  background-position: 0px -160px;
+}
+.icon-sceptre-1 {
+  background-position: -416px -96px;
+}
+.icon-sceptre-2 {
+  background-position: -512px -96px;
+}
+.icon-sceptre-3 {
+  background-position: -384px -96px;
+}
+.icon-book-0 {
+  background-position: 0px -160px;
+}
+.icon-book-1 {
+  background-position: -224px -32px;
+}
+.icon-book-2 {
+  background-position: -192px -32px;
+}
+.icon-book-3 {
+  background-position: -256px -32px;
+}
+div.charPortrait {
+  position: absolute;
+  z-index: 9000;
+  width: 84px;
+  height: 86px;
+  background-image: url("../../images/crl_portraits_x2.png");
+}
+.portrait-peasant {
+  background-position: -279px -302px;
+}
+.portrait-gunman {
+  background-position: -188px -302px;
+}
+.portrait-caster {
+  background-position: -100px -10px;
+}
